@@ -22,6 +22,8 @@ typedef struct
     bool led_on;
     uint16_t led_brightness;
     uint8_t led_wavelength;
+    bool led_enable;
+    bool led_latch;
     uint8_t led_i2c_port;
     uint16_t led_i2c_sda;
     uint16_t led_i2c_scl;
