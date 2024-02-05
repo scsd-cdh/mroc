@@ -10,7 +10,7 @@
 
 #include <stdint.h>
 #include <src/peripherals/bme280.h>
-#include <src/peripherals/thermistor.h>
+#include <src/peripherals/lmt01.h>
 
 typedef struct
 {
