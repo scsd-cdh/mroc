@@ -13,9 +13,10 @@
 "./src/drivers/swi2c_master.obj"
 "./src/drivers/wdt_a.obj"
 "./src/main.obj"
+"./src/peripherals/pump.obj"
+"./src/peripherals/spectrophotometer.obj"
 "./src/peripherals/valve.obj"
 "./src/utils/ring_buffer.obj"
-"../lnk_msp430fr5969.cmd"
 -llibmpu_init.a
 -llibmath.a
 -llibc.a
