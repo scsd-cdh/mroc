@@ -10,6 +10,7 @@
 
 #include "adc12_b.h"
 #include "cs.h"
+#include "eusci_a_spi.h"
 #include "eusci_b_i2c.h"
 #include "gpio.h"
 #include "pmm.h"

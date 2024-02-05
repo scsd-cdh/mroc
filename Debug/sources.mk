@@ -117,5 +117,6 @@ src/app/cmd \
 src/app/exp \
 src/drivers \
 src \
+src/peripherals \
 src/utils \
 

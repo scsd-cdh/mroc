@@ -8,10 +8,12 @@
 #ifndef SRC_PERIPHERALS_PUMP_H_
 #define SRC_PERIPHERALS_PUMP_H_
 
-typedef enum
-{
-    FEEDING_PUMP, MIXING_PUMP
-} PumpIdentifier;
+#include <stdint.h>
+
+typedef struct {
+    uint8_t port;
+    uint16_t pin;
+} Pump_Descriptor;
 
 void Pump_Init();
 void Pump_Start(PumpIdentifier id);
