@@ -5,26 +5,31 @@
  *      Author: space
  */
 
+#include "bipump.h"
+#include <src/drivers/drivers.h>
 
-void Bipump_Init(Bipump_Descriptor *descriptor){
+void Bipump_Init(Bipump_Descriptor *descriptor) {
     GPIO_setAsOutputPin(
             descriptor->pump_forward_p_port,
-            descriptor->pump_forward_p_pin,
+            descriptor->pump_forward_p_pin
         );
+
     GPIO_setAsOutputPin(
               descriptor->pump_forward_n_port,
-              descriptor->pump_forward_n_pin,
+              descriptor->pump_forward_n_pin
           );
+
     GPIO_setAsOutputPin(
               descriptor->pump_backward_p_port,
-              descriptor->pump_backward_p_pin,
+              descriptor->pump_backward_p_pin
           );
+
     GPIO_setAsOutputPin(
               descriptor->pump_backward_n_port,
-              descriptor->pump_backward_n_pin,
+              descriptor->pump_backward_n_pin
           );
-    descriptor->state=OFF;
 
+    descriptor->state=OFF;
 }
 
 void Bipump_Forward(Bipump_Descriptor *descriptor){
@@ -36,15 +41,15 @@ void Bipump_Forward(Bipump_Descriptor *descriptor){
       );
     GPIO_setOutputHighOnPin(
             descriptor->pump_forward_n_port,
-            descriptor->pump_forward_n_pin,
+            descriptor->pump_forward_n_pin
            );
     GPIO_setOutputHighOnPin(
             descriptor->pump_backward_p_port,
-            descriptor->pump_backward_p_pin,
+            descriptor->pump_backward_p_pin
         );
       GPIO_setOutputLowOnPin(
            descriptor->pump_backward_n_port,
-           descriptor->pump_backward_n_pin,
+           descriptor->pump_backward_n_pin
              );
       descriptor->state=FORWARD;
 }
@@ -58,17 +63,17 @@ void Bipump_Backward(Bipump_Descriptor *descriptor){
       );
     GPIO_setOutputLowOnPin(
             descriptor->pump_forward_n_port,
-            descriptor->pump_forward_n_pin,
+            descriptor->pump_forward_n_pin
            );
     GPIO_setOutputLowOnPin(
             descriptor->pump_backward_p_port,
-            descriptor->pump_backward_p_pin,
+            descriptor->pump_backward_p_pin
         );
       GPIO_setOutputHighOnPin(
            descriptor->pump_backward_n_port,
-           descriptor->pump_backward_n_pin,
+           descriptor->pump_backward_n_pin
              );
-      descriptor->state=BACKWARDS;
+      descriptor->state=BACKWARD;
 }
 
 void Bipump_TurnOff(Bipump_Descriptor *descriptor){
@@ -80,15 +85,15 @@ void Bipump_TurnOff(Bipump_Descriptor *descriptor){
          );
        GPIO_setOutputLowOnPin(
                descriptor->pump_forward_n_port,
-               descriptor->pump_forward_n_pin,
+               descriptor->pump_forward_n_pin
               );
        GPIO_setOutputHighOnPin(
                descriptor->pump_backward_p_port,
-               descriptor->pump_backward_p_pin,
+               descriptor->pump_backward_p_pin
            );
          GPIO_setOutputLowOnPin(
               descriptor->pump_backward_n_port,
-              descriptor->pump_backward_n_pin,
+              descriptor->pump_backward_n_pin
                 );
          descriptor->state=OFF;
 }

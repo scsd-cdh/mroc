@@ -11,9 +11,6 @@
 // Firmware Version
 #define FIRMWARE_VERSION        0
 
-// Ring Buffer
-#define RING_BUFFER_SIZE        32
-
 // External I2C Buses
 #define MAIN_I2C_SDA            GPIO_PIN6
 #define MAIN_I2C_SCL            GPIO_PIN5

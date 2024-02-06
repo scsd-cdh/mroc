@@ -8,6 +8,8 @@
 #ifndef SRC_PERIPHERALS_BIPUMP_H_
 #define SRC_PERIPHERALS_BIPUMP_H_
 
+#include <stdint.h>
+
 typedef enum{
     FORWARD,
     BACKWARD,

@@ -11,10 +11,14 @@
 #include <stdint.h>
 
 typedef struct {
-    uint16_t miso;
-    uint16_t mosi;
-    uint16_t sck;
-    uint16_t cs;
+    uint8_t miso_port;
+    uint16_t miso_pin;
+    uint8_t mosi_port;
+    uint16_t mosi_pin;
+    uint8_t sck_port;
+    uint16_t sck_pin;
+    uint8_t cs_port;
+    uint16_t cs_pin;
 
     uint32_t pressure;
     uint32_t temperature;

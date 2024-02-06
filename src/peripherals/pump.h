@@ -9,6 +9,7 @@
 #define SRC_PERIPHERALS_PUMP_H_
 
 #include <stdint.h>
+#include <stdbool.h>
 
 typedef struct {
        uint8_t     port;

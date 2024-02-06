@@ -4,7 +4,7 @@
 
 SHELL = cmd.exe
 
-CG_TOOL_ROOT := C:/ti/ccs1240/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS
+CG_TOOL_ROOT := C:/ti/ccs1250/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS
 
 GEN_OPTS__FLAG := 
 GEN_CMDS__FLAG := 
@@ -25,10 +25,13 @@ ORDERED_OBJS += \
 "./src/drivers/swi2c_master.obj" \
 "./src/drivers/wdt_a.obj" \
 "./src/main.obj" \
+"./src/peripherals/bipump.obj" \
+"./src/peripherals/bme280.obj" \
+"./src/peripherals/lmt01.obj" \
 "./src/peripherals/pump.obj" \
 "./src/peripherals/spectrophotometer.obj" \
 "./src/peripherals/valve.obj" \
-"./src/utils/ring_buffer.obj" \
+"../lnk_msp430fr5969.cmd" \
 $(GEN_CMDS__FLAG) \
 -llibmpu_init.a \
 -llibmath.a \
@@ -41,20 +44,20 @@ RMDIR := RMDIR /S/Q
 
 # All of the sources participating in the build are defined here
 -include sources.mk
+-include subdir_vars.mk
 -include src/app/subdir_vars.mk
 -include src/app/cmd/subdir_vars.mk
 -include src/app/exp/subdir_vars.mk
 -include src/drivers/subdir_vars.mk
 -include src/subdir_vars.mk
 -include src/peripherals/subdir_vars.mk
--include src/utils/subdir_vars.mk
+-include subdir_rules.mk
 -include src/app/subdir_rules.mk
 -include src/app/cmd/subdir_rules.mk
 -include src/app/exp/subdir_rules.mk
 -include src/drivers/subdir_rules.mk
 -include src/subdir_rules.mk
 -include src/peripherals/subdir_rules.mk
--include src/utils/subdir_rules.mk
 -include objects.mk
 
 ifneq ($(MAKECMDGOALS),clean)
@@ -151,29 +154,29 @@ endif
 
 # Add inputs and outputs from these tool invocations to the build variables 
 EXE_OUTPUTS += \
-mroc.out \
+mroc.out 
 
 EXE_OUTPUTS__QUOTED += \
-"mroc.out" \
+"mroc.out" 
 
 
 # All Target
-all: $(OBJS) $(GEN_CMDS)
+all: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
 	@$(MAKE) --no-print-directory -Onone "mroc.out"
 
 # Tool invocations
-mroc.out: $(OBJS) $(GEN_CMDS)
+mroc.out: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
 	@echo 'Building target: "$@"'
 	@echo 'Invoking: MSP430 Linker'
-	"C:/ti/ccs1240/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/bin/cl430" -vmspx --data_model=restricted --use_hw_mpy=F5 --advice:power=all --advice:hw_config=all --define=__MSP430FR5969__ --define=_MPU_ENABLE -g --printf_support=minimal --diag_warning=225 --diag_wrap=off --display_error_number --silicon_errata=CPU21 --silicon_errata=CPU22 --silicon_errata=CPU40 -z -m"mroc.map" --heap_size=160 --stack_size=160 --cinit_hold_wdt=on -i"C:/ti/ccs1240/ccs/ccs_base/msp430/include" -i"C:/ti/ccs1240/ccs/ccs_base/msp430/lib/5xx_6xx_FRxx" -i"C:/ti/ccs1240/ccs/ccs_base/msp430/lib/FR59xx" -i"C:/ti/ccs1240/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/lib" -i"C:/ti/ccs1240/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include" --priority --reread_libs --define=_MPU_ENABLE --diag_wrap=off --display_error_number --warn_sections --xml_link_info="mroc_linkInfo.xml" --use_hw_mpy=F5 --rom_model -o "mroc.out" $(ORDERED_OBJS)
+	"C:/ti/ccs1250/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/bin/cl430" -vmspx --data_model=restricted --use_hw_mpy=F5 --advice:power=all --advice:hw_config=all --define=__MSP430FR5969__ --define=_MPU_ENABLE -g --printf_support=minimal --diag_warning=225 --diag_wrap=off --display_error_number --silicon_errata=CPU21 --silicon_errata=CPU22 --silicon_errata=CPU40 -z -m"mroc.map" --heap_size=160 --stack_size=160 --cinit_hold_wdt=on -i"C:/ti/ccs1250/ccs/ccs_base/msp430/include" -i"C:/ti/ccs1250/ccs/ccs_base/msp430/lib/5xx_6xx_FRxx" -i"C:/ti/ccs1250/ccs/ccs_base/msp430/lib/FR59xx" -i"C:/ti/ccs1250/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/lib" -i"C:/ti/ccs1250/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include" --priority --reread_libs --define=_MPU_ENABLE --diag_wrap=off --display_error_number --warn_sections --xml_link_info="mroc_linkInfo.xml" --use_hw_mpy=F5 --rom_model -o "mroc.out" $(ORDERED_OBJS)
 	@echo 'Finished building target: "$@"'
 	@echo ' '
 
 # Other Targets
 clean:
 	-$(RM) $(EXE_OUTPUTS__QUOTED)
-	-$(RM) "src\app\app.obj" "src\app\cmd\cmd_handler.obj" "src\app\cmd\cmd_register.obj" "src\app\exp\exp_state_manager.obj" "src\drivers\adc12_b.obj" "src\drivers\cs.obj" "src\drivers\eusci_a_spi.obj" "src\drivers\eusci_b_i2c.obj" "src\drivers\gpio.obj" "src\drivers\pmm.obj" "src\drivers\rtc_b.obj" "src\drivers\rtc_c.obj" "src\drivers\swi2c_master.obj" "src\drivers\wdt_a.obj" "src\main.obj" "src\peripherals\pump.obj" "src\peripherals\spectrophotometer.obj" "src\peripherals\valve.obj" "src\utils\ring_buffer.obj" 
-	-$(RM) "src\app\app.d" "src\app\cmd\cmd_handler.d" "src\app\cmd\cmd_register.d" "src\app\exp\exp_state_manager.d" "src\drivers\adc12_b.d" "src\drivers\cs.d" "src\drivers\eusci_a_spi.d" "src\drivers\eusci_b_i2c.d" "src\drivers\gpio.d" "src\drivers\pmm.d" "src\drivers\rtc_b.d" "src\drivers\rtc_c.d" "src\drivers\swi2c_master.d" "src\drivers\wdt_a.d" "src\main.d" "src\peripherals\pump.d" "src\peripherals\spectrophotometer.d" "src\peripherals\valve.d" "src\utils\ring_buffer.d" 
+	-$(RM) "src\app\app.obj" "src\app\cmd\cmd_handler.obj" "src\app\cmd\cmd_register.obj" "src\app\exp\exp_state_manager.obj" "src\drivers\adc12_b.obj" "src\drivers\cs.obj" "src\drivers\eusci_a_spi.obj" "src\drivers\eusci_b_i2c.obj" "src\drivers\gpio.obj" "src\drivers\pmm.obj" "src\drivers\rtc_b.obj" "src\drivers\rtc_c.obj" "src\drivers\swi2c_master.obj" "src\drivers\wdt_a.obj" "src\main.obj" "src\peripherals\bipump.obj" "src\peripherals\bme280.obj" "src\peripherals\lmt01.obj" "src\peripherals\pump.obj" "src\peripherals\spectrophotometer.obj" "src\peripherals\valve.obj" 
+	-$(RM) "src\app\app.d" "src\app\cmd\cmd_handler.d" "src\app\cmd\cmd_register.d" "src\app\exp\exp_state_manager.d" "src\drivers\adc12_b.d" "src\drivers\cs.d" "src\drivers\eusci_a_spi.d" "src\drivers\eusci_b_i2c.d" "src\drivers\gpio.d" "src\drivers\pmm.d" "src\drivers\rtc_b.d" "src\drivers\rtc_c.d" "src\drivers\swi2c_master.d" "src\drivers\wdt_a.d" "src\main.d" "src\peripherals\bipump.d" "src\peripherals\bme280.d" "src\peripherals\lmt01.d" "src\peripherals\pump.d" "src\peripherals\spectrophotometer.d" "src\peripherals\valve.d" 
 	-@echo 'Finished clean'
 	-@echo ' '
 

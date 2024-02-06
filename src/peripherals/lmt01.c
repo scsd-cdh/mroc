@@ -5,6 +5,8 @@
  *      Author: space
  */
 
+#include "lmt01.h"
+
 static uint16_t pulseCount = 0;
 static uint16_t recordedPulseCount = 0;
 
