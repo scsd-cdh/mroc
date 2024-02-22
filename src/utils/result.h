@@ -14,6 +14,6 @@ typedef enum
     ERR_BUFFER_NULL,
     ERR_CIRCULAR_BUFFER_FULL,
     ERR_CIRCULAR_BUFFER_EMPTY,
-} Result;
+} MResult;
 
 #endif /* SRC_RESULT_H_ */

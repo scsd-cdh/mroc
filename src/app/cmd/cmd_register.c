@@ -20,6 +20,8 @@ static uint8_t* currentRegisterBuffer;
 static uint8_t  currentRegisterBufferIdx;
 static uint8_t  currentRegisterBufferLength;
 
+
+
 void Cmd_RequestTelemetryFrame(uint8_t tlm_request) {
     currentRegisterBufferIdx = 0;
     switch(tlm_request) {

@@ -17,6 +17,17 @@ typedef struct {
     uint8_t last_state;
     uint32_t uptime_seconds;
     StateProgress progress;
+    uint16_t well_temperature;
+    uint16_t ambient_temperature;
+    uint16_t ambient_pressure;
+    uint16_t ambient_humidity;
+
+    bool bipump_on;
+    uint32_t bipump_timer;
+
+    bool valve_on;
+    bool pump_on;
+    uint32_t pump_timer;
 }ExperimentMonitor;
 
 void Exp_Init();

@@ -31,6 +31,6 @@ typedef struct{
 void Bipump_Init(Bipump_Descriptor *descriptor);
 void Bipump_Forward(Bipump_Descriptor *descriptor);
 void Bipump_Backward(Bipump_Descriptor *descriptor);
-void Bipump_TurnOff(Bipump_Descriptor *descriptor);
+void Bipump_Off(Bipump_Descriptor *descriptor);
 
 #endif /* SRC_PERIPHERALS_BIPUMP_H_ */

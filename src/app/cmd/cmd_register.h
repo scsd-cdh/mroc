@@ -34,7 +34,7 @@ typedef struct
 
 typedef struct
 {
-    uint8_t leds_status[6];
+    uint8_t leds_status[7];
     uint8_t other_devices;
 } __attribute__((packed)) Cmd_HardwareHealthStatusRegister;
 

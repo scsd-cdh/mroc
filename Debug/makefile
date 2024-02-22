@@ -10,6 +10,7 @@ GEN_OPTS__FLAG :=
 GEN_CMDS__FLAG := 
 
 ORDERED_OBJS += \
+"./extern/bme280.obj" \
 "./src/app/app.obj" \
 "./src/app/cmd/cmd_handler.obj" \
 "./src/app/cmd/cmd_register.obj" \
@@ -22,14 +23,16 @@ ORDERED_OBJS += \
 "./src/drivers/pmm.obj" \
 "./src/drivers/rtc_b.obj" \
 "./src/drivers/rtc_c.obj" \
+"./src/drivers/swi2c.obj" \
 "./src/drivers/swi2c_master.obj" \
 "./src/drivers/wdt_a.obj" \
 "./src/main.obj" \
 "./src/peripherals/bipump.obj" \
 "./src/peripherals/bme280.obj" \
 "./src/peripherals/lmt01.obj" \
+"./src/peripherals/mpq3326.obj" \
+"./src/peripherals/opt4003.obj" \
 "./src/peripherals/pump.obj" \
-"./src/peripherals/spectrophotometer.obj" \
 "./src/peripherals/valve.obj" \
 "../lnk_msp430fr5969.cmd" \
 $(GEN_CMDS__FLAG) \
@@ -45,6 +48,7 @@ RMDIR := RMDIR /S/Q
 # All of the sources participating in the build are defined here
 -include sources.mk
 -include subdir_vars.mk
+-include extern/subdir_vars.mk
 -include src/app/subdir_vars.mk
 -include src/app/cmd/subdir_vars.mk
 -include src/app/exp/subdir_vars.mk
@@ -52,6 +56,7 @@ RMDIR := RMDIR /S/Q
 -include src/subdir_vars.mk
 -include src/peripherals/subdir_vars.mk
 -include subdir_rules.mk
+-include extern/subdir_rules.mk
 -include src/app/subdir_rules.mk
 -include src/app/cmd/subdir_rules.mk
 -include src/app/exp/subdir_rules.mk
@@ -175,8 +180,8 @@ mroc.out: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
 # Other Targets
 clean:
 	-$(RM) $(EXE_OUTPUTS__QUOTED)
-	-$(RM) "src\app\app.obj" "src\app\cmd\cmd_handler.obj" "src\app\cmd\cmd_register.obj" "src\app\exp\exp_state_manager.obj" "src\drivers\adc12_b.obj" "src\drivers\cs.obj" "src\drivers\eusci_a_spi.obj" "src\drivers\eusci_b_i2c.obj" "src\drivers\gpio.obj" "src\drivers\pmm.obj" "src\drivers\rtc_b.obj" "src\drivers\rtc_c.obj" "src\drivers\swi2c_master.obj" "src\drivers\wdt_a.obj" "src\main.obj" "src\peripherals\bipump.obj" "src\peripherals\bme280.obj" "src\peripherals\lmt01.obj" "src\peripherals\pump.obj" "src\peripherals\spectrophotometer.obj" "src\peripherals\valve.obj" 
-	-$(RM) "src\app\app.d" "src\app\cmd\cmd_handler.d" "src\app\cmd\cmd_register.d" "src\app\exp\exp_state_manager.d" "src\drivers\adc12_b.d" "src\drivers\cs.d" "src\drivers\eusci_a_spi.d" "src\drivers\eusci_b_i2c.d" "src\drivers\gpio.d" "src\drivers\pmm.d" "src\drivers\rtc_b.d" "src\drivers\rtc_c.d" "src\drivers\swi2c_master.d" "src\drivers\wdt_a.d" "src\main.d" "src\peripherals\bipump.d" "src\peripherals\bme280.d" "src\peripherals\lmt01.d" "src\peripherals\pump.d" "src\peripherals\spectrophotometer.d" "src\peripherals\valve.d" 
+	-$(RM) "extern\bme280.obj" "src\app\app.obj" "src\app\cmd\cmd_handler.obj" "src\app\cmd\cmd_register.obj" "src\app\exp\exp_state_manager.obj" "src\drivers\adc12_b.obj" "src\drivers\cs.obj" "src\drivers\eusci_a_spi.obj" "src\drivers\eusci_b_i2c.obj" "src\drivers\gpio.obj" "src\drivers\pmm.obj" "src\drivers\rtc_b.obj" "src\drivers\rtc_c.obj" "src\drivers\swi2c.obj" "src\drivers\swi2c_master.obj" "src\drivers\wdt_a.obj" "src\main.obj" "src\peripherals\bipump.obj" "src\peripherals\bme280.obj" "src\peripherals\lmt01.obj" "src\peripherals\mpq3326.obj" "src\peripherals\opt4003.obj" "src\peripherals\pump.obj" "src\peripherals\valve.obj" 
+	-$(RM) "extern\bme280.d" "src\app\app.d" "src\app\cmd\cmd_handler.d" "src\app\cmd\cmd_register.d" "src\app\exp\exp_state_manager.d" "src\drivers\adc12_b.d" "src\drivers\cs.d" "src\drivers\eusci_a_spi.d" "src\drivers\eusci_b_i2c.d" "src\drivers\gpio.d" "src\drivers\pmm.d" "src\drivers\rtc_b.d" "src\drivers\rtc_c.d" "src\drivers\swi2c.d" "src\drivers\swi2c_master.d" "src\drivers\wdt_a.d" "src\main.d" "src\peripherals\bipump.d" "src\peripherals\bme280.d" "src\peripherals\lmt01.d" "src\peripherals\mpq3326.d" "src\peripherals\opt4003.d" "src\peripherals\pump.d" "src\peripherals\valve.d" 
 	-@echo 'Finished clean'
 	-@echo ' '
 

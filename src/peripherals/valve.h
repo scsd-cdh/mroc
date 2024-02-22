@@ -14,7 +14,6 @@
 typedef struct {
     uint8_t     port;
     uint16_t    pin;
-    bool        is_on;
 } Valve_Descriptor;
 
 void Valve_Init(Valve_Descriptor *descriptor);

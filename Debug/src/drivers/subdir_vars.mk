@@ -14,6 +14,7 @@ C_SRCS += \
 ../src/drivers/pmm.c \
 ../src/drivers/rtc_b.c \
 ../src/drivers/rtc_c.c \
+../src/drivers/swi2c.c \
 ../src/drivers/swi2c_master.c \
 ../src/drivers/wdt_a.c 
 
@@ -26,6 +27,7 @@ C_DEPS += \
 ./src/drivers/pmm.d \
 ./src/drivers/rtc_b.d \
 ./src/drivers/rtc_c.d \
+./src/drivers/swi2c.d \
 ./src/drivers/swi2c_master.d \
 ./src/drivers/wdt_a.d 
 
@@ -38,6 +40,7 @@ OBJS += \
 ./src/drivers/pmm.obj \
 ./src/drivers/rtc_b.obj \
 ./src/drivers/rtc_c.obj \
+./src/drivers/swi2c.obj \
 ./src/drivers/swi2c_master.obj \
 ./src/drivers/wdt_a.obj 
 
@@ -50,6 +53,7 @@ OBJS__QUOTED += \
 "src\drivers\pmm.obj" \
 "src\drivers\rtc_b.obj" \
 "src\drivers\rtc_c.obj" \
+"src\drivers\swi2c.obj" \
 "src\drivers\swi2c_master.obj" \
 "src\drivers\wdt_a.obj" 
 
@@ -62,6 +66,7 @@ C_DEPS__QUOTED += \
 "src\drivers\pmm.d" \
 "src\drivers\rtc_b.d" \
 "src\drivers\rtc_c.d" \
+"src\drivers\swi2c.d" \
 "src\drivers\swi2c_master.d" \
 "src\drivers\wdt_a.d" 
 
@@ -74,6 +79,7 @@ C_SRCS__QUOTED += \
 "../src/drivers/pmm.c" \
 "../src/drivers/rtc_b.c" \
 "../src/drivers/rtc_c.c" \
+"../src/drivers/swi2c.c" \
 "../src/drivers/swi2c_master.c" \
 "../src/drivers/wdt_a.c" 
 

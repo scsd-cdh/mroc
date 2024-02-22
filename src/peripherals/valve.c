@@ -13,8 +13,6 @@ void Valve_Init(Valve_Descriptor *descriptor){
         descriptor->port,
         descriptor->pin
     );
-
-    descriptor->is_on = false;
 }
 
 void Valve_Open(Valve_Descriptor *descriptor) {
@@ -22,8 +20,6 @@ void Valve_Open(Valve_Descriptor *descriptor) {
         descriptor->port,
         descriptor->pin
     );
-
-    descriptor->is_on = true;
 }
 
 void Valve_Close(Valve_Descriptor *descriptor) {
@@ -31,7 +27,5 @@ void Valve_Close(Valve_Descriptor *descriptor) {
         descriptor->port,
         descriptor->pin
     );
-
-    descriptor->is_on = false;
 }
 
