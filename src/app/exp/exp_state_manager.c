@@ -6,6 +6,7 @@
  */
 
 #include "exp_state_manager.h"
+#include "exp_instrument.h"
 #include <src/config.h>
 #include <src/drivers/drivers.h>
 #include <src/app/app.h>
@@ -20,6 +21,7 @@ static LMT01_Descriptor wellTemperatureDescriptor;
 static Pump_Descriptor pumpDescriptor;
 static Bipump_Descriptor bipumpDescriptor;
 static Valve_Descriptor valveDescriptor;
+static Heater_Descriptor heaterDescriptor;
 
 static uint8_t currentState;
 static ExperimentMonitor experimentMonitor;
@@ -33,6 +35,9 @@ void Exp_Init()
     experimentMonitor.uptime_seconds = App_GetUptime();
     experimentMonitor.progress = STATE_COMPLETE;
 
+    // Spectrophotometer
+    Exp_InstrumentInit();
+
     // BME280 Initialize (Ambient temperature, pressure, humidity)
 
     // LMT01 Initialize (Well temperature)
@@ -45,11 +50,6 @@ void Exp_Init()
     pumpDescriptor.pin = PUMP_PIN;
     Pump_Init(&pumpDescriptor);
 
-    // Valve initialize (Feeding valve)
-    valveDescriptor.port = VALVE_PORT;
-    valveDescriptor.pin = VALVE_PIN;
-    Valve_Init(&valveDescriptor);
-
     // Bipump Initialize (Mixing pump)
     bipumpDescriptor.pump_forward_p_port = BIPUMP_FORWARD_P_PORT;
     bipumpDescriptor.pump_forward_p_pin = BIPUMP_FORWARD_P_PIN;
@@ -61,8 +61,15 @@ void Exp_Init()
     bipumpDescriptor.pump_backward_n_pin = BIPUMP_BACKWARD_N_PIN;
     Bipump_Init(&bipumpDescriptor);
 
-    // Initialize spectrophotometer
+    // Valve initialize (Feeding valve)
+    valveDescriptor.port = VALVE_PORT;
+    valveDescriptor.pin = VALVE_PIN;
+    Valve_Init(&valveDescriptor);
 
+    // Heater Initialize
+    heaterDescriptor.port = HEATER_PORT;
+    heaterDescriptor.pin = HEATER_PIN;
+    Heater_Init(&heaterDescriptor);
 }
 
 void Exp_NextState()
@@ -117,7 +124,10 @@ void Exp_Update()
 
     // Update Registers
     Cmd_SetSystemStatus(currentState, App_GetUptime());
-    Cmd_SetExperimentStatusRegister(experimentMonitor.last_state, experimentMonitor.progress, experimentMonitor.uptime_seconds);
+    Cmd_SetExperimentStatusRegister(
+            experimentMonitor.last_state,
+            experimentMonitor.progress,
+            experimentMonitor.uptime_seconds);
 }
 
 bool State_IsIdle() {
@@ -126,15 +136,15 @@ bool State_IsIdle() {
 
 void State_HandlePreparation()
 {
-    if (
-            experimentMonitor.well_temperature > MIN_EXP_TEMP &&
-            experimentMonitor.ambient_temperature > MIN_EXP_TEMP &&
-            !experimentMonitor.bipump_on) {
+    if (experimentMonitor.well_temperature > MIN_EXP_TEMP &&
+        experimentMonitor.ambient_temperature > MIN_EXP_TEMP &&
+        !experimentMonitor.bipump_on) {
         Bipump_Forward(&bipumpDescriptor);
         experimentMonitor.bipump_timer = App_GetUptime(); // Start timer
     }
 
-    if(experimentMonitor.bipump_on && App_GetUptime() - experimentMonitor.bipump_timer >= MIX_PUMP_DURATION) {
+    if(experimentMonitor.bipump_on &&
+        App_GetUptime() - experimentMonitor.bipump_timer >= MIX_PUMP_DURATION) {
         Bipump_Off(&bipumpDescriptor);
 
         experimentMonitor.last_state = currentState;
@@ -153,7 +163,8 @@ void State_HandleActivation()
         experimentMonitor.pump_timer = App_GetUptime(); // Start timer
     }
 
-    if (experimentMonitor.valve_on && App_GetUptime() - experimentMonitor.pump_timer >= MIX_PUMP_DURATION) {
+    if (experimentMonitor.valve_on &&
+        App_GetUptime() - experimentMonitor.pump_timer >= MIX_PUMP_DURATION) {
         Pump_Off(&pumpDescriptor);
         Valve_Close(&valveDescriptor);
 

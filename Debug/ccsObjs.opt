@@ -2,6 +2,7 @@
 "./src/app/app.obj"
 "./src/app/cmd/cmd_handler.obj"
 "./src/app/cmd/cmd_register.obj"
+"./src/app/exp/exp_instrument.obj"
 "./src/app/exp/exp_state_manager.obj"
 "./src/drivers/adc12_b.obj"
 "./src/drivers/cs.obj"
@@ -22,7 +23,7 @@
 "./src/peripherals/opt4003.obj"
 "./src/peripherals/pump.obj"
 "./src/peripherals/valve.obj"
-"../lnk_msp430fr5969.cmd"
+"../lnk_msp430fr5989.cmd"
 -llibmpu_init.a
 -llibmath.a
 -llibc.a

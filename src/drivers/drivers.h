@@ -14,7 +14,7 @@
 #include "eusci_b_i2c.h"
 #include "gpio.h"
 #include "pmm.h"
-#include "rtc_b.h"
+#include "rtc_c.h"
 #include "wdt_a.h"
 
 #endif /* SRC_DRIVERS_DRIVERS_H_ */

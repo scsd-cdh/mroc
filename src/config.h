@@ -39,15 +39,15 @@
 #define BIPUMP_BACKWARD_P_PORT  GPIO_PORT_P2
 #define BIPUMP_BACKWARD_P_PIN   GPIO_PIN4
 
+// Pump Pinout
+#define PUMP_PORT               GPIO_PORT_P3
+#define PUMP_PIN                GPIO_PIN7
+
 // BME280 Pinout
 
 // LMT01 Pinout
 #define LMT01_PORT              GPIO_PORT_P5
 #define LMT01_PIN               GPIO_PIN0
-
-// Pump Pinout
-#define PUMP_PORT               GPIO_PORT_P3
-#define PUMP_PIN                GPIO_PIN7
 
 // MPQ3326 Pinout
 #define MPQ3326_W570_ADDR       0x36
@@ -62,5 +62,9 @@
 // Valve Pinout
 #define VALVE_PORT              GPIO_PORT_P3
 #define VALVE_PIN               GPIO_PIN6
+
+// Heater Pinout
+#define HEATER_PORT             GPIO_PORT_P9
+#define HEATER_PIN              GPIO_PIN6
 
 #endif /* SRC_CONFIG_H_ */

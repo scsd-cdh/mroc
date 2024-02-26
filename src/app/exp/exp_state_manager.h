@@ -8,26 +8,30 @@
 #ifndef SRC_STATE_MACHINE_STATE_MANAGER_H_
 #define SRC_STATE_MACHINE_STATE_MANAGER_H_
 
-#include "exp_measurement.h"
 #include "exp_state.h"
 #include <stdbool.h>
 #include <src/app/cmd/cmd_register.h>
 
 typedef struct {
+    // Experiment
     uint8_t last_state;
     uint32_t uptime_seconds;
     StateProgress progress;
+
+    // Temperature
     uint16_t well_temperature;
     uint16_t ambient_temperature;
     uint16_t ambient_pressure;
     uint16_t ambient_humidity;
 
+    // Pumps
     bool bipump_on;
     uint32_t bipump_timer;
-
-    bool valve_on;
     bool pump_on;
     uint32_t pump_timer;
+
+    // Valve
+    bool valve_on;
 }ExperimentMonitor;
 
 void Exp_Init();

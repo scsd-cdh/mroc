@@ -5,9 +5,9 @@
  *      Author: Ruben
  */
 #include <src/app/exp/exp_state_manager.h>
-#include "cmd_handler.h"
 #include <src/drivers/drivers.h>
 #include <src/config.h>
+#include "cmd_handler.h"
 
 static uint8_t commandArgumentBuffer[MAX_CMD_SIZE] = {0};
 static uint8_t commandArgumentBufferLength;
@@ -26,7 +26,7 @@ void Cmd_Init()
     // Main I2C Bus
     GPIO_setAsPeripheralModuleFunctionInputPin(GPIO_PORT_P1,
                                                GPIO_PIN6 + GPIO_PIN7,
-                                               GPIO_SECONDARY_MODULE_FUNCTION);
+                                               GPIO_PRIMARY_MODULE_FUNCTION);
 
     EUSCI_B_I2C_initSlaveParam param = { 0 };
     param.slaveAddress = MAIN_SLAVE_ADDR;

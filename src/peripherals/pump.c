@@ -16,7 +16,7 @@ void Pump_Init(Pump_Descriptor *descriptor) {
 
 }
 
-void  Pump_On(Pump_Descriptor *descriptor) {
+void Pump_On(Pump_Descriptor *descriptor) {
     GPIO_setOutputLowOnPin(
         descriptor->port,
         descriptor->pin
