@@ -8,6 +8,7 @@
 #ifndef CMD_CMD_DEFINITION_H_
 #define CMD_CMD_DEFINITION_H_
 
+#include <src/config.h>
 #include <stdint.h>
 
 void Cmd_RequestTelemetryFrame(uint8_t tlm_request);
@@ -47,7 +48,7 @@ typedef struct
 } __attribute__((packed)) Cmd_EnvironmentInformationRegister;
 
 typedef struct {
-    uint16_t results;
+    uint32_t results[WELL_COUNT];
 }__attribute__((packed)) Cmd_PhotoSensorResultsRegister;
 
 typedef struct

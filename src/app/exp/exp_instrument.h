@@ -8,7 +8,7 @@
 #ifndef SRC_APP_EXP_EXP_INSTRUMENT_H_
 #define SRC_APP_EXP_EXP_INSTRUMENT_H_
 
-#define EXP_INSTRUMENT_SENSOR_COUNT 1
+#define EXP_INSTRUMENT_SENSOR_COUNT 14
 
 #include <stdint.h>
 
@@ -19,6 +19,13 @@ typedef enum {
     W850NM,
     WNUM
 } Exp_InstrumentWavelength;
+
+typedef enum {
+    INS_INIT,
+    INS_ON,
+    INS_OFF,
+    INS_CAPTURE
+} InstrumentState;
 
 void Exp_InstrumentInit();
 void Exp_InstrumentLEDsOn(Exp_InstrumentWavelength wavelength);

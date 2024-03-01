@@ -84,8 +84,11 @@ void Cmd_SetEnvironmentInformationRegister(uint16_t well_temperature, uint16_t a
     environmentInformationRegister.ambient_humidity = ambient_humidity;
 }
 
-void Cmd_SetPhotosensorResults() {
-    photoSensorResultsRegister.results = 150;
+void Cmd_SetPhotosensorResults(uint32_t results[WELL_COUNT]) {
+    int i;
+    for(i = 0; i < WELL_COUNT; i ++) {
+        photoSensorResultsRegister.results[i] = results[i];
+    }
 }
 
 void Cmd_SetTelecommandAcknowledge(uint8_t tc_id, uint8_t tc_result) {

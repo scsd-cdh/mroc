@@ -16,11 +16,12 @@
 #define FIRMWARE_VERSION        1           // Maximum version is 31
 
 // Experiment Thresholds
-#define MIN_VIABLE_EXP_TEMP     5.0         // Celsius
-#define MAX_VIABLE_EXP_TEMP     40.0        // Celsius
-#define MIN_EXP_TEMP            20.0        // Celsius
-#define MAX_EXP_TEMP            37.0        // Celsius
-#define MIX_PUMP_DURATION       20.0        // Seconds
+#define MIN_VIABLE_EXP_TEMP     5           // Celsius
+#define MAX_VIABLE_EXP_TEMP     40          // Celsius
+#define MIN_EXP_TEMP            20          // Celsius
+#define MAX_EXP_TEMP            37          // Celsius
+#define MIX_PUMP_DURATION       20          // Seconds
+#define WELL_COUNT              14          // Units
 
 // External I2C Buses
 #define MAIN_I2C_SDA            GPIO_PIN6

@@ -12,7 +12,7 @@
 #include <src/drivers/drivers.h>
 
 #define HEATER_PWM_TA_CTL TASSEL__SMCLK + MC__UP + TACLR
-#define HEATER_PWM_TA_CCTL OUTMOD_7 // Reset/Set output mode for TA1.1
+#define HEATER_PWM_TA_CCTL OUTMOD_7
 #define HEATER_PWM_TA_CCR0 1000 - 1
 #define HEATER_PWM_TA_CCR1 500
 

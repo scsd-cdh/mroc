@@ -8,12 +8,9 @@
 #include "swi2c.h"
 #include <src/drivers/drivers.h>
 
-void SWI2C_SendStart(SWI2C_Descriptor *descriptor);
-
 void SWI2C_Init(SWI2C_Descriptor *descriptor) {
     *descriptor->scl_port_out &= ~descriptor->scl_pin;
     *descriptor->sda_port_out &= ~descriptor->sda_pin;
-
 
     *descriptor->scl_port_dir &= ~descriptor->scl_pin;
     *descriptor->sda_port_dir &= ~descriptor->sda_pin;
@@ -23,133 +20,133 @@ void SWI2C_Init(SWI2C_Descriptor *descriptor) {
 
 int32_t SWI2C_Read(SWI2C_Descriptor *descriptor, uint8_t *buffer, uint16_t len) {
     uint_fast8_t bits, temp;
-        uint16_t ii = 0;
+    uint16_t ii = 0;
 
-        /* Starting the timer */
-        TB0CTL = TBSSEL_2 + MC_1 + TBCLR;
+    /* Starting the timer */
+    TB0CTL = TBSSEL_2 + MC_1 + TBCLR;
 
-        /* Sending the START */
-        *descriptor->sda_port_dir |= descriptor->sda_pin;
-        __no_operation();
+    /* Sending the START */
+    *descriptor->sda_port_dir |= descriptor->sda_pin;
+    __no_operation();
+    *descriptor->scl_port_dir |= descriptor->scl_pin;
+    TIMER_ITERATION();
+
+    /* Next doing the control byte */
+    temp = (descriptor->address << 1) | BIT0;
+    bits = 8;
+
+    /* Loop until all bits of the address byte are sent out */
+    do
+    {
+        /* Deciding if we want to send a high or low out of the line */
+        if (temp & BIT7)
+        {
+            *descriptor->sda_port_dir &= ~descriptor->sda_pin;
+        }
+        else
+        {
+            *descriptor->sda_port_dir |= descriptor->sda_pin;
+        }
+
+        /* Now that we set the SDA line, we have to send out a clock pulse */
+        *descriptor->scl_port_dir &= ~descriptor->scl_pin;
+        TIMER_ITERATION();
+
+        /* Incrementing to the next bit and waiting for the next clock cycle */
+        temp = (temp << 1);
+        bits = (bits - 1);
         *descriptor->scl_port_dir |= descriptor->scl_pin;
         TIMER_ITERATION();
 
-        /* Next doing the control byte */
-        temp = (descriptor->address << 1) | BIT0;
-        bits = 8;
+    }
+    while (bits > 0);
 
-        /* Loop until all bits of the address byte are sent out */
+    /* Detecting if we have a NAK on the bus. If the slave device NAKed the
+     control byte, it probably isn't there on the bus so we should send
+     an I2C stop and return false */
+    *descriptor->sda_port_dir &= ~descriptor->sda_pin;
+    *descriptor->scl_port_dir &= ~descriptor->scl_pin;
+    TIMER_ITERATION();
+
+    if (*descriptor->sda_port_in & descriptor->sda_pin)
+    {
+        goto I2CReadTransactionCleanUp;
+    }
+
+    /* Next, we want to read out all of the data requested */
+    for (ii = 0; ii < len; ii++)
+    {
+        /*
+         * Waiting for our clock line to go high if the slave is stretching
+         */
+        while (!(*descriptor->scl_port_in & descriptor->scl_pin))
+            ;
+
+        /* Setup the read variables */
+        temp = 0;
+        bits = 0x08;
+
+        /* Sending out another clock cycle */
+        *descriptor->scl_port_dir |= descriptor->scl_pin;
+        TIMER_ITERATION();
+        *descriptor->sda_port_dir &= ~descriptor->sda_pin;
+
+        /* Loop to read until all bits have been read */
         do
         {
-            /* Deciding if we want to send a high or low out of the line */
-            if (temp & BIT7)
-            {
-                *descriptor->sda_port_dir &= ~descriptor->sda_pin;
-            }
-            else
-            {
-                *descriptor->sda_port_dir |= descriptor->sda_pin;
-            }
-
-            /* Now that we set the SDA line, we have to send out a clock pulse */
+            /* Priming our temporary variable and sending a clock pulse */
+            temp = (temp << 1);
             *descriptor->scl_port_dir &= ~descriptor->scl_pin;
             TIMER_ITERATION();
 
-            /* Incrementing to the next bit and waiting for the next clock cycle */
-            temp = (temp << 1);
+            /* If the data line is high, recording that */
+            if (*descriptor->sda_port_in & descriptor->sda_pin)
+            {
+                temp += 1;
+            }
+
+            /* Send out another clock cycle and decrement our counter */
             bits = (bits - 1);
             *descriptor->scl_port_dir |= descriptor->scl_pin;
             TIMER_ITERATION();
-
         }
         while (bits > 0);
 
-        /* Detecting if we have a NAK on the bus. If the slave device NAKed the
-         control byte, it probably isn't there on the bus so we should send
-         an I2C stop and return false */
-        *descriptor->sda_port_dir &= ~descriptor->sda_pin;
-        *descriptor->scl_port_dir &= ~descriptor->scl_pin;
-        TIMER_ITERATION();
+        /* Storing the data off */
+        buffer[ii] = temp;
 
-        if (*descriptor->sda_port_in & descriptor->sda_pin)
-        {
-            goto I2CReadTransactionCleanUp;
-        }
-
-        /* Next, we want to read out all of the data requested */
-        for (ii = 0; ii < len; ii++)
-        {
-            /*
-             * Waiting for our clock line to go high if the slave is stretching
-             */
-            while (!(*descriptor->scl_port_in & descriptor->scl_pin))
-                ;
-
-            /* Setup the read variables */
-            temp = 0;
-            bits = 0x08;
-
-            /* Sending out another clock cycle */
-            *descriptor->scl_port_dir |= descriptor->scl_pin;
-            TIMER_ITERATION();
+        /* Now the master needs to send out the ACK */
+        if (ii == len - 1)
             *descriptor->sda_port_dir &= ~descriptor->sda_pin;
-
-            /* Loop to read until all bits have been read */
-            do
-            {
-                /* Priming our temporary variable and sending a clock pulse */
-                temp = (temp << 1);
-                *descriptor->scl_port_dir &= ~descriptor->scl_pin;
-                TIMER_ITERATION();
-
-                /* If the data line is high, recording that */
-                if (*descriptor->sda_port_in & descriptor->sda_pin)
-                {
-                    temp += 1;
-                }
-
-                /* Send out another clock cycle and decrement our counter */
-                bits = (bits - 1);
-                *descriptor->scl_port_dir |= descriptor->scl_pin;
-                TIMER_ITERATION();
-            }
-            while (bits > 0);
-
-            /* Storing the data off */
-            buffer[ii] = temp;
-
-            /* Now the master needs to send out the ACK */
-            if (ii == len - 1)
-                *descriptor->sda_port_dir &= ~descriptor->sda_pin;
-            else
-                *descriptor->sda_port_dir |= descriptor->sda_pin;
-            *descriptor->scl_port_dir &= ~descriptor->scl_pin;
-
-            /*
-             * Waiting for our clock line to go high if the slave is stretching
-             */
-            while (!(*descriptor->scl_port_in & descriptor->scl_pin))
-                ;
-
-            TIMER_ITERATION();
-        }
-
-        I2CReadTransactionCleanUp:
-
-        /* Sending out the stop bit */
-        *descriptor->scl_port_dir |= descriptor->scl_pin;
-        *descriptor->sda_port_dir |= descriptor->sda_pin;
-        TIMER_ITERATION();
+        else
+            *descriptor->sda_port_dir |= descriptor->sda_pin;
         *descriptor->scl_port_dir &= ~descriptor->scl_pin;
-        __no_operation();
-        *descriptor->sda_port_dir &= ~descriptor->sda_pin;
+
+        /*
+         * Waiting for our clock line to go high if the slave is stretching
+         */
+        while (!(*descriptor->scl_port_in & descriptor->scl_pin))
+            ;
+
         TIMER_ITERATION();
+    }
 
-        /* Stop the timer */
-        TB0CTL = MC_0;
+    I2CReadTransactionCleanUp:
 
-        /* If all bytes were read, return true- otherwise false. */
-        return ii;
+    /* Sending out the stop bit */
+    *descriptor->scl_port_dir |= descriptor->scl_pin;
+    *descriptor->sda_port_dir |= descriptor->sda_pin;
+    TIMER_ITERATION();
+    *descriptor->scl_port_dir &= ~descriptor->scl_pin;
+    __no_operation();
+    *descriptor->sda_port_dir &= ~descriptor->sda_pin;
+    TIMER_ITERATION();
+
+    /* Stop the timer */
+    TB0CTL = MC_0;
+
+    /* If all bytes were read, return true- otherwise false. */
+    return ii;
 }
 
 int32_t SWI2C_Write(SWI2C_Descriptor *descriptor, uint8_t *buffer, uint16_t len) {
@@ -160,16 +157,70 @@ int32_t SWI2C_Write(SWI2C_Descriptor *descriptor, uint8_t *buffer, uint16_t len)
     TB0CTL = TBSSEL_2 + MC_1 + TBCLR;
 
     /* Sending the START */
-        *descriptor->sda_port_dir |= descriptor->sda_pin;
-        __no_operation();
+    *descriptor->sda_port_dir |= descriptor->sda_pin;
+    __no_operation();
+    *descriptor->scl_port_dir |= descriptor->scl_pin;
+    TIMER_ITERATION();
+
+    /* Next doing the control byte */
+    temp = (descriptor->address << 1);
+    bits = 8;
+
+    /* Loop until all bits of the address byte are sent out */
+    do
+    {
+        /* Deciding if we want to send a high or low out of the line */
+        if (temp & BIT7)
+        {
+            *descriptor->sda_port_dir &= ~descriptor->sda_pin;
+        }
+        else
+        {
+            *descriptor->sda_port_dir |= descriptor->sda_pin;
+        }
+
+        /* Now that we set the SDA line, we have to send out a clock pulse */
+        *descriptor->scl_port_dir &= ~descriptor->scl_pin;
+        TIMER_ITERATION();
+
+        /* Incrementing to the next bit and waiting for the next clock cycle */
+        temp = (temp << 1);
+        bits = (bits - 1);
+
         *descriptor->scl_port_dir |= descriptor->scl_pin;
         TIMER_ITERATION();
 
-        /* Next doing the control byte */
-        temp = (descriptor->address << 1);
+    }
+    while (bits > 0);
+
+    /* Detecting if we have a NAK on the bus. If the slave device NAKed the
+     control byte, it probably isn't there on the bus so we should send
+     an I2C stop and return false */
+    *descriptor->sda_port_dir &= ~descriptor->sda_pin;
+    *descriptor->scl_port_dir &= ~descriptor->scl_pin;
+    /*
+     * Waiting for our clock line to go high if the slave is stretching
+     */
+    while (!(*descriptor->scl_port_in & descriptor->scl_pin));
+
+    TIMER_ITERATION();
+
+    if (*descriptor->sda_port_in & descriptor->sda_pin)
+    {
+        goto I2CWriteTransactionCleanUp;
+    }
+
+    /* Sending out another clock cycle */
+    *descriptor->scl_port_dir |= descriptor->scl_pin;
+    TIMER_ITERATION();
+
+    /* Next, let us send out all bytes in the user buffer */
+    for (ii = 0; ii < len; ii++)
+    {
+        temp = buffer[ii];
         bits = 8;
 
-        /* Loop until all bits of the address byte are sent out */
+        /* Loop until all bits of the current byte are sent out */
         do
         {
             /* Deciding if we want to send a high or low out of the line */
@@ -182,29 +233,27 @@ int32_t SWI2C_Write(SWI2C_Descriptor *descriptor, uint8_t *buffer, uint16_t len)
                 *descriptor->sda_port_dir |= descriptor->sda_pin;
             }
 
-            /* Now that we set the SDA line, we have to send out a clock pulse */
+            /* Now that we set the SDA line, we send out a clock pulse */
             *descriptor->scl_port_dir &= ~descriptor->scl_pin;
             TIMER_ITERATION();
 
-            /* Incrementing to the next bit and waiting for the next clock cycle */
+            /* Incrementing to the next bit and waiting for next clock cycle */
             temp = (temp << 1);
             bits = (bits - 1);
-
             *descriptor->scl_port_dir |= descriptor->scl_pin;
             TIMER_ITERATION();
 
         }
         while (bits > 0);
 
-        /* Detecting if we have a NAK on the bus. If the slave device NAKed the
-         control byte, it probably isn't there on the bus so we should send
-         an I2C stop and return false */
+        /* Detecting the NAK. We should break out of the send loop */
         *descriptor->sda_port_dir &= ~descriptor->sda_pin;
         *descriptor->scl_port_dir &= ~descriptor->scl_pin;
         /*
          * Waiting for our clock line to go high if the slave is stretching
          */
-        while (!(*descriptor->scl_port_in & descriptor->scl_pin));
+        while (!(*descriptor->scl_port_in & descriptor->scl_pin))
+            ;
 
         TIMER_ITERATION();
 
@@ -216,78 +265,21 @@ int32_t SWI2C_Write(SWI2C_Descriptor *descriptor, uint8_t *buffer, uint16_t len)
         /* Sending out another clock cycle */
         *descriptor->scl_port_dir |= descriptor->scl_pin;
         TIMER_ITERATION();
+    }
 
-        /* Next, let us send out all bytes in the user buffer */
-        for (ii = 0; ii < len; ii++)
-        {
-            temp = buffer[ii];
-            bits = 8;
+    I2CWriteTransactionCleanUp:
+    /* If the user did not request to skip, we send out the stop bit */
 
-            /* Loop until all bits of the current byte are sent out */
-            do
-            {
-                /* Deciding if we want to send a high or low out of the line */
-                if (temp & BIT7)
-                {
-                    *descriptor->sda_port_dir &= ~descriptor->sda_pin;
-                }
-                else
-                {
-                    *descriptor->sda_port_dir |= descriptor->sda_pin;
-                }
-
-                /* Now that we set the SDA line, we send out a clock pulse */
-                *descriptor->scl_port_dir &= ~descriptor->scl_pin;
-                TIMER_ITERATION();
-
-                /* Incrementing to the next bit and waiting for next clock cycle */
-                temp = (temp << 1);
-                bits = (bits - 1);
-                *descriptor->scl_port_dir |= descriptor->scl_pin;
-                TIMER_ITERATION();
-
-            }
-            while (bits > 0);
-
-            /* Detecting the NAK. We should break out of the send loop */
-            *descriptor->sda_port_dir &= ~descriptor->sda_pin;
-            *descriptor->scl_port_dir &= ~descriptor->scl_pin;
-            /*
-             * Waiting for our clock line to go high if the slave is stretching
-             */
-            while (!(*descriptor->scl_port_in & descriptor->scl_pin))
-                ;
-
-            TIMER_ITERATION();
-
-            if (*descriptor->sda_port_in & descriptor->sda_pin)
-            {
-                goto I2CWriteTransactionCleanUp;
-            }
-
-            /* Sending out another clock cycle */
-            *descriptor->scl_port_dir |= descriptor->scl_pin;
-            TIMER_ITERATION();
-        }
-
-        I2CWriteTransactionCleanUp:
-        /* If the user did not request to skip, we send out the stop bit */
-
-        *descriptor->scl_port_dir |= descriptor->scl_pin;
-        TIMER_ITERATION();
-        *descriptor->sda_port_dir |= descriptor->sda_pin;
-        TIMER_ITERATION();
-        *descriptor->scl_port_dir &= ~descriptor->scl_pin;
-        __no_operation();
-        *descriptor->sda_port_dir &= ~descriptor->sda_pin;
-
-        /* Stop the timer */
-        TB0CTL = MC_0;
-
-        return ii;
-}
-
-void SWI2C_SendStart(SWI2C_Descriptor *descriptor) {
-
+    *descriptor->scl_port_dir |= descriptor->scl_pin;
     TIMER_ITERATION();
+    *descriptor->sda_port_dir |= descriptor->sda_pin;
+    TIMER_ITERATION();
+    *descriptor->scl_port_dir &= ~descriptor->scl_pin;
+    __no_operation();
+    *descriptor->sda_port_dir &= ~descriptor->sda_pin;
+
+    /* Stop the timer */
+    TB0CTL = MC_0;
+
+    return ii;
 }

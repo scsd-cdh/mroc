@@ -26,8 +26,10 @@ static Heater_Descriptor heaterDescriptor;
 
 static uint8_t currentState;
 static ExperimentMonitor experimentMonitor;
+static InstrumentState instrumentState;
+static Exp_InstrumentWavelength currentWavelength;
 
-static uint32_t sensorBuffer[1];
+static uint32_t experimentResults[14];
 
 void Exp_Init()
 {
@@ -37,6 +39,9 @@ void Exp_Init()
     experimentMonitor.last_state = STATE_IDLE;
     experimentMonitor.uptime_seconds = App_GetUptime();
     experimentMonitor.progress = STATE_COMPLETE;
+
+    instrumentState = INS_INIT;
+    currentWavelength = W470NM;
 
     // Spectrophotometer
     Exp_InstrumentInit();
@@ -106,7 +111,6 @@ void Exp_Update()
 {
     // Update state
     experimentMonitor.well_temperature = LMT01_Read(&wellTemperatureDescriptor);
-    Exp_InstrumentRead(&sensorBuffer);
 
     // Do experiment actions
     switch(currentState) {
@@ -132,6 +136,13 @@ void Exp_Update()
             experimentMonitor.last_state,
             experimentMonitor.progress,
             experimentMonitor.uptime_seconds);
+    Cmd_SetEnvironmentInformationRegister(
+            experimentMonitor.well_temperature,
+            experimentMonitor.ambient_temperature,
+            experimentMonitor.ambient_pressure,
+            experimentMonitor.ambient_humidity
+    );
+    Cmd_SetPhotosensorResults(experimentResults);
 }
 
 bool State_IsIdle() {
@@ -176,24 +187,71 @@ void State_HandleActivation()
         experimentMonitor.progress = STATE_COMPLETE;
         experimentMonitor.uptime_seconds = App_GetUptime() - experimentMonitor.uptime_seconds;
 
+        currentWavelength = W630NM;
+
         currentState = STATE_IDLE;
     }
 }
 
 void State_HandleGrowth()
 {
-    // Turn green LEDs on
-    // Read values
-    // Turn green LEDs off
+    switch(instrumentState) {
+    case INS_INIT:
+        instrumentState = INS_ON;
+        break;
+    case INS_ON:
+        Exp_InstrumentLEDsOn(currentWavelength);
+        instrumentState = INS_CAPTURE;
+        break;
+    case INS_OFF:
+        // For redundancy sake turn them all off.
+        Exp_InstrumentLEDsOff(W470NM);
+        Exp_InstrumentLEDsOff(W570NM);
+        Exp_InstrumentLEDsOff(W630NM);
+        Exp_InstrumentLEDsOff(W850NM);
+        instrumentState = INS_ON;
 
-    // Turn infrared LEDs on
-    // Read values
-    // Turn infrared LEDs off
+        // Alternate between W630NM and W850NM
+        if (currentWavelength == W630NM) {
+            currentWavelength = W850NM;
+        } else {
+            currentWavelength = W630NM;
+        }
+        break;
+    case INS_CAPTURE:
+        Exp_InstrumentRead(experimentResults);
+        instrumentState = INS_OFF;
+        break;
+    default:
+        instrumentState = INS_INIT;
+        break;
+    }
 }
 
 void State_HandleInduction()
 {
-    // Turn blue LEDs on
-    // Read values
-    // Turn blue LEDs off
+    switch(instrumentState) {
+        case INS_INIT:
+            instrumentState = INS_ON;
+            break;
+        case INS_ON:
+            Exp_InstrumentLEDsOn(W470NM);
+            instrumentState = INS_CAPTURE;
+            break;
+        case INS_OFF:
+            // For redundancy sake turn them all off.
+            Exp_InstrumentLEDsOff(W470NM);
+            Exp_InstrumentLEDsOff(W570NM);
+            Exp_InstrumentLEDsOff(W630NM);
+            Exp_InstrumentLEDsOff(W850NM);
+            instrumentState = INS_ON;
+            break;
+        case INS_CAPTURE:
+            Exp_InstrumentRead(experimentResults);
+            instrumentState = INS_OFF;
+            break;
+        default:
+            instrumentState = INS_INIT;
+            break;
+        }
 }
