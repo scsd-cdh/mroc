@@ -22,32 +22,32 @@ void Exp_InstrumentInit() {
     wavelength_state[W630NM] = false;
     wavelength_state[W850NM] = false;
 
-    wavelength_descriptors[W470NM].address = MPQ3326_W470_ADDR;
-    wavelength_descriptors[W470NM].sda_port = MPQ3326_I2C_SDA_PORT;
-    wavelength_descriptors[W470NM].sda_pin = MPQ3326_I2C_SDA_PIN;
-    wavelength_descriptors[W470NM].scl_port = MPQ3326_I2C_SCL_PORT;
-    wavelength_descriptors[W470NM].scl_pin = MPQ3326_I2C_SCL_PIN;
+//    wavelength_descriptors[W470NM].address = MPQ3326_W470_ADDR;
+//    wavelength_descriptors[W470NM].sda_port = MPQ3326_I2C_SDA_PORT;
+//    wavelength_descriptors[W470NM].sda_pin = MPQ3326_I2C_SDA_PIN;
+//    wavelength_descriptors[W470NM].scl_port = MPQ3326_I2C_SCL_PORT;
+//    wavelength_descriptors[W470NM].scl_pin = MPQ3326_I2C_SCL_PIN;
     MPQ3326_Init(&wavelength_descriptors[W470NM]);
 
-    wavelength_descriptors[W570NM].address = MPQ3326_W570_ADDR;
-    wavelength_descriptors[W570NM].sda_port = MPQ3326_I2C_SDA_PORT;
-    wavelength_descriptors[W570NM].sda_pin = MPQ3326_I2C_SDA_PIN;
-    wavelength_descriptors[W570NM].scl_port = MPQ3326_I2C_SCL_PORT;
-    wavelength_descriptors[W570NM].scl_pin = MPQ3326_I2C_SCL_PIN;
+//    wavelength_descriptors[W570NM].address = MPQ3326_W570_ADDR;
+//    wavelength_descriptors[W570NM].sda_port = MPQ3326_I2C_SDA_PORT;
+//    wavelength_descriptors[W570NM].sda_pin = MPQ3326_I2C_SDA_PIN;
+//    wavelength_descriptors[W570NM].scl_port = MPQ3326_I2C_SCL_PORT;
+//    wavelength_descriptors[W570NM].scl_pin = MPQ3326_I2C_SCL_PIN;
     MPQ3326_Init(&wavelength_descriptors[W570NM]);
 
-    wavelength_descriptors[W630NM].address = MPQ3326_W630_ADDR;
-    wavelength_descriptors[W630NM].sda_port = MPQ3326_I2C_SDA_PORT;
-    wavelength_descriptors[W630NM].sda_pin = MPQ3326_I2C_SDA_PIN;
-    wavelength_descriptors[W630NM].scl_port = MPQ3326_I2C_SCL_PORT;
-    wavelength_descriptors[W630NM].scl_pin = MPQ3326_I2C_SCL_PIN;
+//    wavelength_descriptors[W630NM].address = MPQ3326_W630_ADDR;
+//    wavelength_descriptors[W630NM].sda_port = MPQ3326_I2C_SDA_PORT;
+//    wavelength_descriptors[W630NM].sda_pin = MPQ3326_I2C_SDA_PIN;
+//    wavelength_descriptors[W630NM].scl_port = MPQ3326_I2C_SCL_PORT;
+//    wavelength_descriptors[W630NM].scl_pin = MPQ3326_I2C_SCL_PIN;
     MPQ3326_Init(&wavelength_descriptors[W630NM]);
 
-    wavelength_descriptors[W850NM].address = MPQ3326_W850_ADDR;
-    wavelength_descriptors[W850NM].sda_port = MPQ3326_I2C_SDA_PORT;
-    wavelength_descriptors[W850NM].sda_pin = MPQ3326_I2C_SDA_PIN;
-    wavelength_descriptors[W850NM].scl_port = MPQ3326_I2C_SCL_PORT;
-    wavelength_descriptors[W850NM].scl_pin = MPQ3326_I2C_SCL_PIN;
+//    wavelength_descriptors[W850NM].address = MPQ3326_W850_ADDR;
+//    wavelength_descriptors[W850NM].sda_port = MPQ3326_I2C_SDA_PORT;
+//    wavelength_descriptors[W850NM].sda_pin = MPQ3326_I2C_SDA_PIN;
+//    wavelength_descriptors[W850NM].scl_port = MPQ3326_I2C_SCL_PORT;
+//    wavelength_descriptors[W850NM].scl_pin = MPQ3326_I2C_SCL_PIN;
     MPQ3326_Init(&wavelength_descriptors[W850NM]);
 
     MPQ3326_TurnLEDsOff(&wavelength_descriptors[W470NM]);
@@ -77,9 +77,13 @@ void Exp_InstrumentInit() {
 //    OPT4003_Init(&light_sensors[2]);
 
     light_sensors[0].address = OPT4003_I2C_ADDR_2;
-    light_sensors[0].sda_port = MPQ3326_I2C_SDA_PORT;
+    light_sensors[0].sda_port_out = &P3OUT;
+    light_sensors[0].sda_port_in = &P3IN;
+    light_sensors[0].sda_port_dir = &P3DIR;
     light_sensors[0].sda_pin = MPQ3326_I2C_SDA_PIN;
-    light_sensors[0].scl_port = MPQ3326_I2C_SCL_PORT;
+    light_sensors[0].scl_port_out = &P5OUT;
+    light_sensors[0].scl_port_in = &P5IN;
+    light_sensors[0].scl_port_dir = &P5DIR;
     light_sensors[0].scl_pin = MPQ3326_I2C_SCL_PIN;
     OPT4003_Init(&light_sensors[0]);
 

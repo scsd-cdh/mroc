@@ -11,177 +11,145 @@
 void SWI2C_SendStart(SWI2C_Descriptor *descriptor);
 
 void SWI2C_Init(SWI2C_Descriptor *descriptor) {
-    // Initialize scl pin
-    GPIO_setAsOutputPin(
-        descriptor->scl_port,
-        descriptor->scl_pin
-    );
-    GPIO_setOutputHighOnPin(
-        descriptor->scl_port,
-        descriptor->scl_pin
-    );
+    *descriptor->scl_port_out &= ~descriptor->scl_pin;
+    *descriptor->sda_port_out &= ~descriptor->sda_pin;
 
-    // Initialize sda pin
-    GPIO_setAsOutputPin(
-        descriptor->sda_port,
-        descriptor->sda_pin
-    );
-    GPIO_setOutputHighOnPin(
-        descriptor->sda_port,
-        descriptor->sda_pin
-    );
+
+    *descriptor->scl_port_dir &= ~descriptor->scl_pin;
+    *descriptor->sda_port_dir &= ~descriptor->sda_pin;
 
     TB0CCR0 = SWI2C_TIMER_PERIOD;
 }
 
 int32_t SWI2C_Read(SWI2C_Descriptor *descriptor, uint8_t *buffer, uint16_t len) {
     uint_fast8_t bits, temp;
-    uint16_t ii = 0;
+        uint16_t ii = 0;
 
-    // Start Timer
-    TB0CTL = TBSSEL_2 + MC_1 + TBCLR;
+        /* Starting the timer */
+        TB0CTL = TBSSEL_2 + MC_1 + TBCLR;
 
-    // Send Start
-    SWI2C_SendStart(descriptor);
-
-    // Send Address with Read Instruction
-    //         7 BIT ADDRESS          |    READ
-    temp = (descriptor->address << 1) | 0b00000001;
-    bits = 8;
-
-    // Loop to send bit by bit of the address
-    do
-    {
-        if (temp & 0b10000000) {
-            GPIO_setOutputHighOnPin(
-                descriptor->sda_port,
-                descriptor->sda_pin
-            );
-        } else {
-            GPIO_setOutputLowOnPin(
-                descriptor->sda_port,
-                descriptor->sda_pin
-            );
-        }
-
-        GPIO_setOutputHighOnPin(
-            descriptor->scl_port,
-            descriptor->scl_pin
-        );
+        /* Sending the START */
+        *descriptor->sda_port_dir |= descriptor->sda_pin;
+        __no_operation();
+        *descriptor->scl_port_dir |= descriptor->scl_pin;
         TIMER_ITERATION();
 
-        temp = (temp << 1);
-        bits = (bits - 1);
-        GPIO_setOutputLowOnPin(
-            descriptor->scl_port,
-            descriptor->scl_pin
-        );
-        TIMER_ITERATION();
-
-    }
-    while (bits > 0);
-
-    // Check for NAK
-    GPIO_setAsInputPin(descriptor->sda_port, descriptor->sda_pin);
-    TIMER_ITERATION();
-    if (GPIO_getInputPinValue(descriptor->sda_port, descriptor->sda_pin) == GPIO_INPUT_PIN_HIGH)
-    {
-        goto I2CReadTransactionCleanUp;
-    }
-    GPIO_setAsOutputPin(descriptor->sda_port, descriptor->sda_pin);
-
-    // Read data
-    for (ii = 0; ii < len; ii++)
-    {
-        temp = 0;
+        /* Next doing the control byte */
+        temp = (descriptor->address << 1) | BIT0;
         bits = 8;
 
-        GPIO_setOutputLowOnPin(
-            descriptor->scl_port,
-            descriptor->scl_pin
-        );
-        TIMER_ITERATION();
-        GPIO_setOutputHighOnPin(
-            descriptor->sda_port,
-            descriptor->sda_pin
-        );
-
-        // Loop and read bit by bit
-        GPIO_setAsInputPin(descriptor->sda_port, descriptor->sda_pin);
+        /* Loop until all bits of the address byte are sent out */
         do
         {
-            temp = (temp << 1);
-            GPIO_setOutputHighOnPin(
-                descriptor->scl_port,
-                descriptor->scl_pin
-            );
-            TIMER_ITERATION();
-
-            if (GPIO_getInputPinValue(descriptor->sda_port, descriptor->sda_pin) == GPIO_INPUT_PIN_HIGH)
+            /* Deciding if we want to send a high or low out of the line */
+            if (temp & BIT7)
             {
-                temp += 1;
+                *descriptor->sda_port_dir &= ~descriptor->sda_pin;
+            }
+            else
+            {
+                *descriptor->sda_port_dir |= descriptor->sda_pin;
             }
 
-            bits = (bits - 1);
-            GPIO_setOutputLowOnPin(
-                descriptor->scl_port,
-                descriptor->scl_pin
-            );
+            /* Now that we set the SDA line, we have to send out a clock pulse */
+            *descriptor->scl_port_dir &= ~descriptor->scl_pin;
             TIMER_ITERATION();
+
+            /* Incrementing to the next bit and waiting for the next clock cycle */
+            temp = (temp << 1);
+            bits = (bits - 1);
+            *descriptor->scl_port_dir |= descriptor->scl_pin;
+            TIMER_ITERATION();
+
         }
         while (bits > 0);
 
-        buffer[ii] = temp;
-
-        GPIO_setAsOutputPin(descriptor->sda_port, descriptor->sda_pin);
-        if (ii == len - 1) {
-            GPIO_setOutputHighOnPin(
-                descriptor->sda_port,
-                descriptor->sda_pin
-            );
-        } else {
-            GPIO_setOutputLowOnPin(
-                descriptor->sda_port,
-                descriptor->sda_pin
-            );
-        }
-        GPIO_setOutputHighOnPin(
-            descriptor->scl_port,
-            descriptor->scl_pin
-        );
-
-        GPIO_setAsInputPin(descriptor->scl_port, descriptor->scl_pin);
-        while (GPIO_getInputPinValue(descriptor->scl_port, descriptor->scl_pin) != GPIO_INPUT_PIN_HIGH);
-        GPIO_setAsOutputPin(descriptor->scl_port, descriptor->scl_pin);
+        /* Detecting if we have a NAK on the bus. If the slave device NAKed the
+         control byte, it probably isn't there on the bus so we should send
+         an I2C stop and return false */
+        *descriptor->sda_port_dir &= ~descriptor->sda_pin;
+        *descriptor->scl_port_dir &= ~descriptor->scl_pin;
         TIMER_ITERATION();
-    }
 
-    I2CReadTransactionCleanUp:
+        if (*descriptor->sda_port_in & descriptor->sda_pin)
+        {
+            goto I2CReadTransactionCleanUp;
+        }
 
-    // Send Stop
-    GPIO_setOutputLowOnPin(
-        descriptor->scl_port,
-        descriptor->scl_pin
-    );
-    GPIO_setOutputLowOnPin(
-        descriptor->sda_port,
-        descriptor->sda_pin
-    );
-    TIMER_ITERATION();
-    GPIO_setOutputHighOnPin(
-        descriptor->scl_port,
-        descriptor->scl_pin
-    );
-    __no_operation();
-    GPIO_setOutputHighOnPin(
-        descriptor->sda_port,
-        descriptor->sda_pin
-    );
-    TIMER_ITERATION();
+        /* Next, we want to read out all of the data requested */
+        for (ii = 0; ii < len; ii++)
+        {
+            /*
+             * Waiting for our clock line to go high if the slave is stretching
+             */
+            while (!(*descriptor->scl_port_in & descriptor->scl_pin))
+                ;
 
-    // Stop The timer
-    TB0CTL = MC_0;
-    return ii;
+            /* Setup the read variables */
+            temp = 0;
+            bits = 0x08;
+
+            /* Sending out another clock cycle */
+            *descriptor->scl_port_dir |= descriptor->scl_pin;
+            TIMER_ITERATION();
+            *descriptor->sda_port_dir &= ~descriptor->sda_pin;
+
+            /* Loop to read until all bits have been read */
+            do
+            {
+                /* Priming our temporary variable and sending a clock pulse */
+                temp = (temp << 1);
+                *descriptor->scl_port_dir &= ~descriptor->scl_pin;
+                TIMER_ITERATION();
+
+                /* If the data line is high, recording that */
+                if (*descriptor->sda_port_in & descriptor->sda_pin)
+                {
+                    temp += 1;
+                }
+
+                /* Send out another clock cycle and decrement our counter */
+                bits = (bits - 1);
+                *descriptor->scl_port_dir |= descriptor->scl_pin;
+                TIMER_ITERATION();
+            }
+            while (bits > 0);
+
+            /* Storing the data off */
+            buffer[ii] = temp;
+
+            /* Now the master needs to send out the ACK */
+            if (ii == len - 1)
+                *descriptor->sda_port_dir &= ~descriptor->sda_pin;
+            else
+                *descriptor->sda_port_dir |= descriptor->sda_pin;
+            *descriptor->scl_port_dir &= ~descriptor->scl_pin;
+
+            /*
+             * Waiting for our clock line to go high if the slave is stretching
+             */
+            while (!(*descriptor->scl_port_in & descriptor->scl_pin))
+                ;
+
+            TIMER_ITERATION();
+        }
+
+        I2CReadTransactionCleanUp:
+
+        /* Sending out the stop bit */
+        *descriptor->scl_port_dir |= descriptor->scl_pin;
+        *descriptor->sda_port_dir |= descriptor->sda_pin;
+        TIMER_ITERATION();
+        *descriptor->scl_port_dir &= ~descriptor->scl_pin;
+        __no_operation();
+        *descriptor->sda_port_dir &= ~descriptor->sda_pin;
+        TIMER_ITERATION();
+
+        /* Stop the timer */
+        TB0CTL = MC_0;
+
+        /* If all bytes were read, return true- otherwise false. */
+        return ii;
 }
 
 int32_t SWI2C_Write(SWI2C_Descriptor *descriptor, uint8_t *buffer, uint16_t len) {
@@ -191,161 +159,135 @@ int32_t SWI2C_Write(SWI2C_Descriptor *descriptor, uint8_t *buffer, uint16_t len)
     // Start the timer
     TB0CTL = TBSSEL_2 + MC_1 + TBCLR;
 
-    // Send Start
-    SWI2C_SendStart(descriptor);
-
-    // Send Address with Write Instruction
-    temp = (descriptor->address << 1);
-    bits = 8;
-
-    // Write Address with Instruction bit by bit
-    do
-    {
-        if (temp & 0b10000000) {
-            GPIO_setOutputHighOnPin(
-                descriptor->sda_port,
-                descriptor->sda_pin
-            );
-        } else {
-            GPIO_setOutputLowOnPin(
-                descriptor->sda_port,
-                descriptor->sda_pin
-            );
-        }
-
-        GPIO_setOutputHighOnPin(
-            descriptor->scl_port,
-            descriptor->scl_pin
-        );
+    /* Sending the START */
+        *descriptor->sda_port_dir |= descriptor->sda_pin;
+        __no_operation();
+        *descriptor->scl_port_dir |= descriptor->scl_pin;
         TIMER_ITERATION();
 
-        temp = (temp << 1);
-        bits = (bits - 1);
-        GPIO_setOutputLowOnPin(
-            descriptor->scl_port,
-            descriptor->scl_pin
-        );
-        TIMER_ITERATION();
-
-    }
-    while (bits > 0);
-
-    // Detecting NAK
-    GPIO_setAsInputPin(descriptor->scl_port, descriptor->scl_pin);
-    GPIO_setAsInputPin(descriptor->sda_port, descriptor->sda_pin);
-    while (GPIO_getInputPinValue(descriptor->scl_port, descriptor->scl_pin) != GPIO_INPUT_PIN_HIGH);
-
-    TIMER_ITERATION();
-
-    if (GPIO_getInputPinValue(descriptor->sda_port, descriptor->sda_pin) == GPIO_INPUT_PIN_HIGH)
-    {
-        goto I2CWriteTransactionCleanUp;
-    }
-
-    GPIO_setAsOutputPin(descriptor->scl_port, descriptor->scl_pin);
-    GPIO_setAsOutputPin(descriptor->sda_port, descriptor->sda_pin);
-
-    GPIO_setOutputLowOnPin(
-        descriptor->scl_port,
-        descriptor->scl_pin
-    );
-    TIMER_ITERATION();
-
-    // Send Buffer
-    for (ii = 0; ii < len; ii++)
-    {
-        temp = buffer[ii];
+        /* Next doing the control byte */
+        temp = (descriptor->address << 1);
         bits = 8;
 
-        // Send bit by bit
+        /* Loop until all bits of the address byte are sent out */
         do
         {
-            if (temp & 0b10000000) {
-                GPIO_setOutputHighOnPin(
-                    descriptor->sda_port,
-                    descriptor->sda_pin
-                );
-            } else {
-                GPIO_setOutputLowOnPin(
-                    descriptor->sda_port,
-                    descriptor->sda_pin
-                );
+            /* Deciding if we want to send a high or low out of the line */
+            if (temp & BIT7)
+            {
+                *descriptor->sda_port_dir &= ~descriptor->sda_pin;
+            }
+            else
+            {
+                *descriptor->sda_port_dir |= descriptor->sda_pin;
             }
 
-            GPIO_setOutputHighOnPin(
-                descriptor->scl_port,
-                descriptor->scl_pin
-            );
+            /* Now that we set the SDA line, we have to send out a clock pulse */
+            *descriptor->scl_port_dir &= ~descriptor->scl_pin;
             TIMER_ITERATION();
 
+            /* Incrementing to the next bit and waiting for the next clock cycle */
             temp = (temp << 1);
             bits = (bits - 1);
-            GPIO_setOutputLowOnPin(
-                descriptor->scl_port,
-                descriptor->scl_pin
-            );
+
+            *descriptor->scl_port_dir |= descriptor->scl_pin;
             TIMER_ITERATION();
 
         }
         while (bits > 0);
 
-        // Detecting NAK
-        GPIO_setAsInputPin(descriptor->scl_port, descriptor->scl_pin);
-        GPIO_setAsInputPin(descriptor->sda_port, descriptor->sda_pin);
-        while (GPIO_getInputPinValue(descriptor->scl_port, descriptor->scl_pin) != GPIO_INPUT_PIN_HIGH);
+        /* Detecting if we have a NAK on the bus. If the slave device NAKed the
+         control byte, it probably isn't there on the bus so we should send
+         an I2C stop and return false */
+        *descriptor->sda_port_dir &= ~descriptor->sda_pin;
+        *descriptor->scl_port_dir &= ~descriptor->scl_pin;
+        /*
+         * Waiting for our clock line to go high if the slave is stretching
+         */
+        while (!(*descriptor->scl_port_in & descriptor->scl_pin));
 
         TIMER_ITERATION();
 
-        if (GPIO_getInputPinValue(descriptor->sda_port, descriptor->sda_pin) == GPIO_INPUT_PIN_HIGH)
+        if (*descriptor->sda_port_in & descriptor->sda_pin)
         {
             goto I2CWriteTransactionCleanUp;
         }
 
-        GPIO_setAsOutputPin(descriptor->scl_port, descriptor->scl_pin);
-        GPIO_setAsOutputPin(descriptor->sda_port, descriptor->sda_pin);
-
-        GPIO_setOutputLowOnPin(
-            descriptor->scl_port,
-            descriptor->scl_pin
-        );
+        /* Sending out another clock cycle */
+        *descriptor->scl_port_dir |= descriptor->scl_pin;
         TIMER_ITERATION();
-    }
 
-    I2CWriteTransactionCleanUp:
-    GPIO_setOutputLowOnPin(
-        descriptor->scl_port,
-        descriptor->scl_pin
-    );
-    TIMER_ITERATION();
-    GPIO_setOutputLowOnPin(
-        descriptor->sda_port,
-        descriptor->sda_pin
-    );
-    TIMER_ITERATION();
-    GPIO_setOutputHighOnPin(
-        descriptor->scl_port,
-        descriptor->scl_pin
-    );
-    __no_operation();
-    GPIO_setOutputHighOnPin(
-        descriptor->sda_port,
-        descriptor->sda_pin
-    );
+        /* Next, let us send out all bytes in the user buffer */
+        for (ii = 0; ii < len; ii++)
+        {
+            temp = buffer[ii];
+            bits = 8;
 
-    // Stop timer
-    TB0CTL = MC_0;
-    return ii;
+            /* Loop until all bits of the current byte are sent out */
+            do
+            {
+                /* Deciding if we want to send a high or low out of the line */
+                if (temp & BIT7)
+                {
+                    *descriptor->sda_port_dir &= ~descriptor->sda_pin;
+                }
+                else
+                {
+                    *descriptor->sda_port_dir |= descriptor->sda_pin;
+                }
+
+                /* Now that we set the SDA line, we send out a clock pulse */
+                *descriptor->scl_port_dir &= ~descriptor->scl_pin;
+                TIMER_ITERATION();
+
+                /* Incrementing to the next bit and waiting for next clock cycle */
+                temp = (temp << 1);
+                bits = (bits - 1);
+                *descriptor->scl_port_dir |= descriptor->scl_pin;
+                TIMER_ITERATION();
+
+            }
+            while (bits > 0);
+
+            /* Detecting the NAK. We should break out of the send loop */
+            *descriptor->sda_port_dir &= ~descriptor->sda_pin;
+            *descriptor->scl_port_dir &= ~descriptor->scl_pin;
+            /*
+             * Waiting for our clock line to go high if the slave is stretching
+             */
+            while (!(*descriptor->scl_port_in & descriptor->scl_pin))
+                ;
+
+            TIMER_ITERATION();
+
+            if (*descriptor->sda_port_in & descriptor->sda_pin)
+            {
+                goto I2CWriteTransactionCleanUp;
+            }
+
+            /* Sending out another clock cycle */
+            *descriptor->scl_port_dir |= descriptor->scl_pin;
+            TIMER_ITERATION();
+        }
+
+        I2CWriteTransactionCleanUp:
+        /* If the user did not request to skip, we send out the stop bit */
+
+        *descriptor->scl_port_dir |= descriptor->scl_pin;
+        TIMER_ITERATION();
+        *descriptor->sda_port_dir |= descriptor->sda_pin;
+        TIMER_ITERATION();
+        *descriptor->scl_port_dir &= ~descriptor->scl_pin;
+        __no_operation();
+        *descriptor->sda_port_dir &= ~descriptor->sda_pin;
+
+        /* Stop the timer */
+        TB0CTL = MC_0;
+
+        return ii;
 }
 
 void SWI2C_SendStart(SWI2C_Descriptor *descriptor) {
-    GPIO_setOutputLowOnPin(
-        descriptor->sda_port,
-        descriptor->sda_pin
-    );
-    __no_operation();
-    GPIO_setOutputLowOnPin(
-        descriptor->scl_port,
-        descriptor->scl_pin
-    );
+
     TIMER_ITERATION();
 }

@@ -24,9 +24,13 @@
                                      while(!(TB0CCTL0 & CCIFG));
 
 typedef struct {
-    uint8_t sda_port;
+    volatile uint8_t* sda_port_out;
+    volatile uint8_t* sda_port_in;
+    volatile uint8_t* sda_port_dir;
     uint16_t sda_pin;
-    uint8_t scl_port;
+    volatile uint8_t* scl_port_out;
+    volatile uint8_t* scl_port_in;
+    volatile uint8_t* scl_port_dir;
     uint16_t scl_pin;
     uint8_t address;
 } SWI2C_Descriptor;
