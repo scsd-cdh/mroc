@@ -15,6 +15,7 @@
 #include <src/peripherals/bipump.h>
 #include <src/peripherals/bme280.h>
 #include <src/peripherals/valve.h>
+#include <src/peripherals/heater.h>
 
 static BME280_Descriptor ambientConditionDescriptor;
 static LMT01_Descriptor wellTemperatureDescriptor;
@@ -25,6 +26,8 @@ static Heater_Descriptor heaterDescriptor;
 
 static uint8_t currentState;
 static ExperimentMonitor experimentMonitor;
+
+static uint32_t sensorBuffer[1];
 
 void Exp_Init()
 {
@@ -51,14 +54,14 @@ void Exp_Init()
     Pump_Init(&pumpDescriptor);
 
     // Bipump Initialize (Mixing pump)
-    bipumpDescriptor.pump_forward_p_port = BIPUMP_FORWARD_P_PORT;
-    bipumpDescriptor.pump_forward_p_pin = BIPUMP_FORWARD_P_PIN;
-    bipumpDescriptor.pump_forward_n_port = BIPUMP_FORWARD_N_PORT;
-    bipumpDescriptor.pump_forward_n_pin = BIPUMP_FORWARD_N_PIN;
-    bipumpDescriptor.pump_backward_p_port = BIPUMP_BACKWARD_P_PORT;
-    bipumpDescriptor.pump_backward_p_pin = BIPUMP_BACKWARD_P_PIN;
-    bipumpDescriptor.pump_backward_n_port = BIPUMP_BACKWARD_N_PORT;
-    bipumpDescriptor.pump_backward_n_pin = BIPUMP_BACKWARD_N_PIN;
+    bipumpDescriptor.pump_q5_port = BIPUMP_Q5_PORT;
+    bipumpDescriptor.pump_q5_pin = BIPUMP_Q5_PIN;
+    bipumpDescriptor.pump_q6_port = BIPUMP_Q6_PORT;
+    bipumpDescriptor.pump_q6_pin = BIPUMP_Q6_PIN;
+    bipumpDescriptor.pump_q1_port = BIPUMP_Q1_PORT;
+    bipumpDescriptor.pump_q1_pin = BIPUMP_Q1_PIN;
+    bipumpDescriptor.pump_q2_port = BIPUMP_Q2_PORT;
+    bipumpDescriptor.pump_q2_pin = BIPUMP_Q2_PIN;
     Bipump_Init(&bipumpDescriptor);
 
     // Valve initialize (Feeding valve)
@@ -103,6 +106,7 @@ void Exp_Update()
 {
     // Update state
     experimentMonitor.well_temperature = LMT01_Read(&wellTemperatureDescriptor);
+    Exp_InstrumentRead(&sensorBuffer);
 
     // Do experiment actions
     switch(currentState) {

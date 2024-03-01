@@ -149,8 +149,7 @@ static bool SWI2C_writeData(uint8_t addr, uint8_t *outputArray,
     /*
      * Waiting for our clock line to go high if the slave is stretching
      */
-    while (!(SWI2C_PxIN & SWI2C_SCL))
-        ;
+    while (!(SWI2C_PxIN & SWI2C_SCL));
 
     TIMER_ITERATION();
 

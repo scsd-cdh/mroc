@@ -5,10 +5,7 @@
 
     Author: Ruben Sanchez
     Date: January 19th, 2024
-    Version: 0.1.0
-
-    This file contains <...>. It is part of the <project/system name>
-    and is used for <purpose>.
+    Version: 1
 
 ******************************************************************************/
 
@@ -18,12 +15,8 @@
 #include <src/drivers/drivers.h>
 
 void main(void) {
-    // Stop watchdog
-    WDT_A_hold(WDT_A_BASE);
-
-    // Disable the GPIO power-on default high-impedance mode to activate
-    // previously configured port settings
-    PMM_unlockLPM5();
+    WDT_A_hold(WDT_A_BASE);     // Stop watchdog
+    PMM_unlockLPM5();           // Disable the GPIO power-on default high-impedance mode
 
     App_Init();
     Exp_Init();

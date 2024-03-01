@@ -18,6 +18,7 @@
 "./src/main.obj"
 "./src/peripherals/bipump.obj"
 "./src/peripherals/bme280.obj"
+"./src/peripherals/heater.obj"
 "./src/peripherals/lmt01.obj"
 "./src/peripherals/mpq3326.obj"
 "./src/peripherals/opt4003.obj"

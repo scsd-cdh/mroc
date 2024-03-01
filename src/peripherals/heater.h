@@ -8,13 +8,15 @@
 #ifndef SRC_PERIPHERALS_HEATER_H_
 #define SRC_PERIPHERALS_HEATER_H_
 
+#include <stdint.h>
+
 typedef struct {
        uint8_t     port;
        uint16_t    pin;
 } Heater_Descriptor;
 
 void Heater_Init(Heater_Descriptor *descriptor);
-void Heater_On(Heater_Descriptor *descriptor);
+void Heater_Write(Heater_Descriptor *descriptor, uint8_t value);
 void Heater_Off(Heater_Descriptor *descriptor);
 
 #endif /* SRC_PERIPHERALS_HEATER_H_ */

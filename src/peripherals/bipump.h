@@ -17,14 +17,14 @@ typedef enum{
 }Bipump_State;
 
 typedef struct{
-    uint8_t pump_forward_p_port;
-    uint16_t pump_forward_p_pin;
-    uint8_t pump_forward_n_port;
-    uint16_t pump_forward_n_pin;
-    uint8_t pump_backward_p_port;
-    uint16_t pump_backward_p_pin;
-    uint8_t pump_backward_n_port;
-    uint16_t pump_backward_n_pin;
+    uint8_t pump_q1_port;
+    uint16_t pump_q1_pin;
+    uint8_t pump_q2_port;
+    uint16_t pump_q2_pin;
+    uint8_t pump_q5_port;
+    uint16_t pump_q5_pin;
+    uint8_t pump_q6_port;
+    uint16_t pump_q6_pin;
     Bipump_State state;
 }Bipump_Descriptor;
 

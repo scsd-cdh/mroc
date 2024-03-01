@@ -14,6 +14,6 @@
 void MPQ3326_Init(SWI2C_Descriptor *descriptor);
 void MPQ3326_TurnLEDsOn(SWI2C_Descriptor *descriptor);
 void MPQ3326_TurnLEDsOff(SWI2C_Descriptor *descriptor);
-void MPQ3326_SetBrightness(SWI2C_Descriptor *descriptor);
+void MPQ3326_SetBrightness(SWI2C_Descriptor *descriptor, uint8_t brightness);
 
 #endif /* SRC_PERIPHERALS_MPQ3326_H_ */

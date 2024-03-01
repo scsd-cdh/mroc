@@ -7,96 +7,180 @@
 #include "exp_instrument.h"
 #include <src/config.h>
 #include <src/drivers/drivers.h>
+#include <src/peripherals/mpq3326.h>
+#include <src/peripherals/opt4003.h>
+#include <stdbool.h>
 
-static SWI2C_Descriptor light_sensors[14];
-static SWI2C_Descriptor w470nm;
-static SWI2C_Descriptor w570nm;
-static SWI2C_Descriptor w630nm;
-static SWI2C_Descriptor w850nm;
+static SWI2C_Descriptor light_sensors[EXP_INSTRUMENT_SENSOR_COUNT];
+
+static bool wavelength_state[WNUM];
+static SWI2C_Descriptor wavelength_descriptors[WNUM];
 
 void Exp_InstrumentInit() {
-    w470nm.address = MPQ3326_W470_ADDR;
-    w470nm.sda_port = MPQ3326_I2C_SDA_PORT;
-    w470nm.sda_pin = MPQ3326_I2C_SDA_PIN;
-    w470nm.scl_port = MPQ3326_I2C_SCL_PORT;
-    w470nm.scl_pin = MPQ3326_I2C_SCL_PIN;
-    MPQ3326_Init(&w470nm);
+    wavelength_state[W470NM] = false;
+    wavelength_state[W570NM] = false;
+    wavelength_state[W630NM] = false;
+    wavelength_state[W850NM] = false;
 
-    w570nm.address = MPQ3326_W570_ADDR;
-    w570nm.sda_port = MPQ3326_I2C_SDA_PORT;
-    w570nm.sda_pin = MPQ3326_I2C_SDA_PIN;
-    w570nm.scl_port = MPQ3326_I2C_SCL_PORT;
-    w570nm.scl_pin = MPQ3326_I2C_SCL_PIN;
-    MPQ3326_Init(&w570nm);
+    wavelength_descriptors[W470NM].address = MPQ3326_W470_ADDR;
+    wavelength_descriptors[W470NM].sda_port = MPQ3326_I2C_SDA_PORT;
+    wavelength_descriptors[W470NM].sda_pin = MPQ3326_I2C_SDA_PIN;
+    wavelength_descriptors[W470NM].scl_port = MPQ3326_I2C_SCL_PORT;
+    wavelength_descriptors[W470NM].scl_pin = MPQ3326_I2C_SCL_PIN;
+    MPQ3326_Init(&wavelength_descriptors[W470NM]);
 
-    w630nm.address = MPQ3326_W630_ADDR;
-    w630nm.sda_port = MPQ3326_I2C_SDA_PORT;
-    w630nm.sda_pin = MPQ3326_I2C_SDA_PIN;
-    w630nm.scl_port = MPQ3326_I2C_SCL_PORT;
-    w630nm.scl_pin = MPQ3326_I2C_SCL_PIN;
-    MPQ3326_Init(&w630nm);
+    wavelength_descriptors[W570NM].address = MPQ3326_W570_ADDR;
+    wavelength_descriptors[W570NM].sda_port = MPQ3326_I2C_SDA_PORT;
+    wavelength_descriptors[W570NM].sda_pin = MPQ3326_I2C_SDA_PIN;
+    wavelength_descriptors[W570NM].scl_port = MPQ3326_I2C_SCL_PORT;
+    wavelength_descriptors[W570NM].scl_pin = MPQ3326_I2C_SCL_PIN;
+    MPQ3326_Init(&wavelength_descriptors[W570NM]);
 
-    w850nm.address = MPQ3326_W850_ADDR;
-    w850nm.sda_port = MPQ3326_I2C_SDA_PORT;
-    w850nm.sda_pin = MPQ3326_I2C_SDA_PIN;
-    w850nm.scl_port = MPQ3326_I2C_SCL_PORT;
-    w850nm.scl_pin = MPQ3326_I2C_SCL_PIN;
-    MPQ3326_Init(&w850nm);
+    wavelength_descriptors[W630NM].address = MPQ3326_W630_ADDR;
+    wavelength_descriptors[W630NM].sda_port = MPQ3326_I2C_SDA_PORT;
+    wavelength_descriptors[W630NM].sda_pin = MPQ3326_I2C_SDA_PIN;
+    wavelength_descriptors[W630NM].scl_port = MPQ3326_I2C_SCL_PORT;
+    wavelength_descriptors[W630NM].scl_pin = MPQ3326_I2C_SCL_PIN;
+    MPQ3326_Init(&wavelength_descriptors[W630NM]);
+
+    wavelength_descriptors[W850NM].address = MPQ3326_W850_ADDR;
+    wavelength_descriptors[W850NM].sda_port = MPQ3326_I2C_SDA_PORT;
+    wavelength_descriptors[W850NM].sda_pin = MPQ3326_I2C_SDA_PIN;
+    wavelength_descriptors[W850NM].scl_port = MPQ3326_I2C_SCL_PORT;
+    wavelength_descriptors[W850NM].scl_pin = MPQ3326_I2C_SCL_PIN;
+    MPQ3326_Init(&wavelength_descriptors[W850NM]);
+
+    MPQ3326_TurnLEDsOff(&wavelength_descriptors[W470NM]);
+    MPQ3326_TurnLEDsOff(&wavelength_descriptors[W570NM]);
+    MPQ3326_TurnLEDsOff(&wavelength_descriptors[W630NM]);
+    MPQ3326_TurnLEDsOff(&wavelength_descriptors[W850NM]);
+
+//    light_sensors[0].address = OPT4003_I2C_ADDR_4;
+//    light_sensors[0].sda_port = OPT4003_I2C_SDA_3_PORT;
+//    light_sensors[0].sda_pin = OPT4003_I2C_SDA_3_PIN;
+//    light_sensors[0].scl_port = OPT4003_I2C_SCL_3_PORT;
+//    light_sensors[0].scl_pin = OPT4003_I2C_SCL_3_PIN;
+//    OPT4003_Init(&light_sensors[0]);
+//
+//    light_sensors[1].address = OPT4003_I2C_ADDR_1;
+//    light_sensors[1].sda_port = OPT4003_I2C_SDA_3_PORT;
+//    light_sensors[1].sda_pin = OPT4003_I2C_SDA_3_PIN;
+//    light_sensors[1].scl_port = OPT4003_I2C_SCL_3_PORT;
+//    light_sensors[1].scl_pin = OPT4003_I2C_SCL_3_PIN;
+//    OPT4003_Init(&light_sensors[1]);
+//
+//    light_sensors[2].address = OPT4003_I2C_ADDR_3;
+//    light_sensors[2].sda_port = OPT4003_I2C_SDA_3_PORT;
+//    light_sensors[2].sda_pin = OPT4003_I2C_SDA_3_PIN;
+//    light_sensors[2].scl_port = OPT4003_I2C_SCL_3_PORT;
+//    light_sensors[2].scl_pin = OPT4003_I2C_SCL_3_PIN;
+//    OPT4003_Init(&light_sensors[2]);
+
+    light_sensors[0].address = OPT4003_I2C_ADDR_2;
+    light_sensors[0].sda_port = MPQ3326_I2C_SDA_PORT;
+    light_sensors[0].sda_pin = MPQ3326_I2C_SDA_PIN;
+    light_sensors[0].scl_port = MPQ3326_I2C_SCL_PORT;
+    light_sensors[0].scl_pin = MPQ3326_I2C_SCL_PIN;
+    OPT4003_Init(&light_sensors[0]);
+
+//    light_sensors[4].address = OPT4003_I2C_ADDR_4;
+//    light_sensors[4].sda_port = OPT4003_I2C_SDA_1_PORT;
+//    light_sensors[4].sda_pin = OPT4003_I2C_SDA_1_PIN;
+//    light_sensors[4].scl_port = OPT4003_I2C_SCL_1_PORT;
+//    light_sensors[4].scl_pin = OPT4003_I2C_SCL_1_PIN;
+//    OPT4003_Init(&light_sensors[4]);
+//
+//    light_sensors[5].address = OPT4003_I2C_ADDR_3;
+//    light_sensors[5].sda_port = OPT4003_I2C_SDA_1_PORT;
+//    light_sensors[5].sda_pin = OPT4003_I2C_SDA_1_PIN;
+//    light_sensors[5].scl_port = OPT4003_I2C_SCL_1_PORT;
+//    light_sensors[5].scl_pin = OPT4003_I2C_SCL_1_PIN;
+//    OPT4003_Init(&light_sensors[5]);
+//
+//    light_sensors[6].address = OPT4003_I2C_ADDR_2;
+//    light_sensors[6].sda_port = OPT4003_I2C_SDA_1_PORT;
+//    light_sensors[6].sda_pin = OPT4003_I2C_SDA_1_PIN;
+//    light_sensors[6].scl_port = OPT4003_I2C_SCL_1_PORT;
+//    light_sensors[6].scl_pin = OPT4003_I2C_SCL_1_PIN;
+//    OPT4003_Init(&light_sensors[6]);
+//
+//    light_sensors[7].address = OPT4003_I2C_ADDR_1;
+//    light_sensors[7].sda_port = OPT4003_I2C_SDA_1_PORT;
+//    light_sensors[7].sda_pin = OPT4003_I2C_SDA_1_PIN;
+//    light_sensors[7].scl_port = OPT4003_I2C_SCL_1_PORT;
+//    light_sensors[7].scl_pin = OPT4003_I2C_SCL_1_PIN;
+//    OPT4003_Init(&light_sensors[7]);
+//
+//    light_sensors[8].address = OPT4003_I2C_ADDR_2;
+//    light_sensors[8].sda_port = OPT4003_I2C_SDA_2_PORT;
+//    light_sensors[8].sda_pin = OPT4003_I2C_SDA_2_PIN;
+//    light_sensors[8].scl_port = OPT4003_I2C_SCL_2_PORT;
+//    light_sensors[8].scl_pin = OPT4003_I2C_SCL_2_PIN;
+//    OPT4003_Init(&light_sensors[8]);
+//
+//    light_sensors[9].address = OPT4003_I2C_ADDR_1;
+//    light_sensors[9].sda_port = OPT4003_I2C_SDA_2_PORT;
+//    light_sensors[9].sda_pin = OPT4003_I2C_SDA_2_PIN;
+//    light_sensors[9].scl_port = OPT4003_I2C_SCL_2_PORT;
+//    light_sensors[9].scl_pin = OPT4003_I2C_SCL_2_PIN;
+//    OPT4003_Init(&light_sensors[9]);
+//
+//    light_sensors[10].address = OPT4003_I2C_ADDR_1;
+//    light_sensors[10].sda_port = OPT4003_I2C_SDA_4_PORT;
+//    light_sensors[10].sda_pin = OPT4003_I2C_SDA_4_PIN;
+//    light_sensors[10].scl_port = OPT4003_I2C_SCL_4_PORT;
+//    light_sensors[10].scl_pin = OPT4003_I2C_SCL_4_PIN;
+//    OPT4003_Init(&light_sensors[10]);
+//
+//    light_sensors[11].address = OPT4003_I2C_ADDR_3;
+//    light_sensors[11].sda_port = OPT4003_I2C_SDA_2_PORT;
+//    light_sensors[11].sda_pin = OPT4003_I2C_SDA_2_PIN;
+//    light_sensors[11].scl_port = OPT4003_I2C_SCL_2_PORT;
+//    light_sensors[11].scl_pin = OPT4003_I2C_SCL_2_PIN;
+//    OPT4003_Init(&light_sensors[11]);
+//
+//    light_sensors[12].address = OPT4003_I2C_ADDR_4;
+//    light_sensors[12].sda_port = OPT4003_I2C_SDA_2_PORT;
+//    light_sensors[12].sda_pin = OPT4003_I2C_SDA_2_PIN;
+//    light_sensors[12].scl_port = OPT4003_I2C_SCL_2_PORT;
+//    light_sensors[12].scl_pin = OPT4003_I2C_SCL_2_PIN;
+//    OPT4003_Init(&light_sensors[12]);
+//
+//    light_sensors[13].address = OPT4003_I2C_ADDR_3;
+//    light_sensors[13].sda_port = OPT4003_I2C_SDA_4_PORT;
+//    light_sensors[13].sda_pin = OPT4003_I2C_SDA_4_PIN;
+//    light_sensors[13].scl_port = OPT4003_I2C_SCL_4_PORT;
+//    light_sensors[13].scl_pin = OPT4003_I2C_SCL_4_PIN;
+//    OPT4003_Init(&light_sensors[13]);
 }
 
 void Exp_InstrumentLEDsOn(Exp_InstrumentWavelength wavelength) {
-    switch(wavelength) {
-    case W470NM:
-        MPQ3326_TurnLEDsOn(&w470nm);
-        break;
-    case W570NM:
-        MPQ3326_TurnLEDsOn(&w570nm);
-        break;
-    case W630NM:
-        MPQ3326_TurnLEDsOn(&w630nm);
-        break;
-    case W850NM:
-        MPQ3326_TurnLEDsOn(&w850nm);
-        break;
-    }
+    wavelength_state[wavelength] = true;
+    MPQ3326_TurnLEDsOn(&wavelength_descriptors[wavelength]);
 }
 
 void Exp_InstrumentLEDsOff(Exp_InstrumentWavelength wavelength) {
-    switch(wavelength) {
-    case W470NM:
-        MPQ3326_TurnLEDsOff(&w470nm);
-        break;
-    case W570NM:
-        MPQ3326_TurnLEDsOff(&w570nm);
-        break;
-    case W630NM:
-        MPQ3326_TurnLEDsOff(&w630nm);
-        break;
-    case W850NM:
-        MPQ3326_TurnLEDsOff(&w850nm);
-        break;
+    wavelength_state[wavelength] = false;
+    MPQ3326_TurnLEDsOff(&wavelength_descriptors[wavelength]);
+}
+
+void Exp_InstrumetToggleLEDs(Exp_InstrumentWavelength wavelength) {
+    if(wavelength_state[wavelength]) {
+        MPQ3326_TurnLEDsOff(&wavelength_descriptors[wavelength]);
+    } else {
+        MPQ3326_TurnLEDsOn(&wavelength_descriptors[wavelength]);
     }
+
+    wavelength_state[wavelength] = !wavelength_state[wavelength];
 }
 
 void Exp_InstrumentSetBrightness(Exp_InstrumentWavelength wavelength, uint8_t brightness) {
-    switch(wavelength) {
-    case W470NM:
-        MPQ3326_SetBrightness(&w470nm);
-        break;
-    case W570NM:
-        MPQ3326_SetBrightness(&w570nm);
-        break;
-    case W630NM:
-        MPQ3326_SetBrightness(&w630nm);
-        break;
-    case W850NM:
-        MPQ3326_SetBrightness(&w850nm);
-        break;
-    }
+    MPQ3326_SetBrightness(&wavelength_descriptors[wavelength], brightness);
 }
 
-void Exp_InstrumentRead(uint32_t buffer[14]) {
-    for(uint8_t i = 0; i < 14; i ++) {
-
+void Exp_InstrumentRead(uint32_t buffer[EXP_INSTRUMENT_SENSOR_COUNT]) {
+    int i;
+    for(i = 0; i < EXP_INSTRUMENT_SENSOR_COUNT; i ++) {
+        OPT4003_Read(&light_sensors[i], &buffer[i]);
     }
 }

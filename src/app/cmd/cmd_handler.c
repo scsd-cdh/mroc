@@ -4,10 +4,17 @@
  *  Created on: Feb. 3, 2024
  *      Author: Ruben
  */
+#include <stdint.h>
 #include <src/app/exp/exp_state_manager.h>
 #include <src/drivers/drivers.h>
 #include <src/config.h>
+#include "cmd_list.h"
+#include "cmd_result.h"
+#include "cmd_register.h"
 #include "cmd_handler.h"
+
+// TODO: update MAX_CMD_SIZE to the actual size
+#define MAX_CMD_SIZE 255
 
 static uint8_t commandArgumentBuffer[MAX_CMD_SIZE] = {0};
 static uint8_t commandArgumentBufferLength;
@@ -22,10 +29,19 @@ void Cmd_Init()
     command = CMD_UNDEFINED;
     commandArgumentBufferIdx = 0;
 
+    //Set DCO frequency to 1MHz
+    CS_setDCOFreq(CS_DCORSEL_0,CS_DCOFSEL_0);
+    //Set ACLK = VLO with frequency divider of 1
+    CS_initClockSignal(CS_ACLK,CS_VLOCLK_SELECT,CS_CLOCK_DIVIDER_1);
+    //Set SMCLK = DCO with frequency divider of 1
+    CS_initClockSignal(CS_SMCLK,CS_DCOCLK_SELECT,CS_CLOCK_DIVIDER_1);
+    //Set MCLK = DCO with frequency divider of 1
+    CS_initClockSignal(CS_MCLK,CS_DCOCLK_SELECT,CS_CLOCK_DIVIDER_1);
+
     // Initialize communication protocol
     // Main I2C Bus
-    GPIO_setAsPeripheralModuleFunctionInputPin(GPIO_PORT_P1,
-                                               GPIO_PIN6 + GPIO_PIN7,
+    GPIO_setAsPeripheralModuleFunctionInputPin(MAIN_I2C_PORT,
+                                               MAIN_I2C_SDA + MAIN_I2C_SCL,
                                                GPIO_PRIMARY_MODULE_FUNCTION);
 
     EUSCI_B_I2C_initSlaveParam param = { 0 };
@@ -38,24 +54,16 @@ void Cmd_Init()
 
     EUSCI_B_I2C_clearInterrupt(EUSCI_B0_BASE,
                                EUSCI_B_I2C_CLOCK_LOW_TIMEOUT_INTERRUPT +
-    EUSCI_B_I2C_RECEIVE_INTERRUPT0 +
-    EUSCI_B_I2C_TRANSMIT_INTERRUPT0 +
-    EUSCI_B_I2C_STOP_INTERRUPT);
+                               EUSCI_B_I2C_RECEIVE_INTERRUPT0 +
+                               EUSCI_B_I2C_TRANSMIT_INTERRUPT0 +
+                               EUSCI_B_I2C_STOP_INTERRUPT);
 
     EUSCI_B_I2C_enableInterrupt(EUSCI_B0_BASE,
                                 EUSCI_B_I2C_CLOCK_LOW_TIMEOUT_INTERRUPT+
-    EUSCI_B_I2C_RECEIVE_INTERRUPT0 +
-    EUSCI_B_I2C_TRANSMIT_INTERRUPT0 +
-    EUSCI_B_I2C_STOP_INTERRUPT);
+                                EUSCI_B_I2C_RECEIVE_INTERRUPT0 +
+                                EUSCI_B_I2C_TRANSMIT_INTERRUPT0 +
+                                EUSCI_B_I2C_STOP_INTERRUPT);
 
-    //Set DCO frequency to 1MHz
-    CS_setDCOFreq(CS_DCORSEL_0,CS_DCOFSEL_0);
-    //Set ACLK = VLO with frequency divider of 1
-    CS_initClockSignal(CS_ACLK,CS_VLOCLK_SELECT,CS_CLOCK_DIVIDER_1);
-    //Set SMCLK = DCO with frequency divider of 1
-    CS_initClockSignal(CS_SMCLK,CS_DCOCLK_SELECT,CS_CLOCK_DIVIDER_1);
-    //Set MCLK = DCO with frequency divider of 1
-    CS_initClockSignal(CS_MCLK,CS_DCOCLK_SELECT,CS_CLOCK_DIVIDER_1);
 }
 
 #if defined(__TI_COMPILER_VERSION__) || defined(__IAR_SYSTEMS_ICC__)
@@ -74,7 +82,7 @@ void USCIB0_ISR(void)
         break;
     case USCI_I2C_UCNACKIFG:    // NAK received (master only)
         break;
-    case USCI_I2C_UCSTTIFG: // START condition detected with own address (slave mode only)
+    case USCI_I2C_UCSTTIFG:     // START condition detected with own address (slave mode only)
         break;
     case USCI_I2C_UCSTPIFG:     // STOP condition detected (master & slave mode)
         if (commandArgumentBufferIdx != commandArgumentBufferLength) {

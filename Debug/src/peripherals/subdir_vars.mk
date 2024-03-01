@@ -8,6 +8,7 @@ SHELL = cmd.exe
 C_SRCS += \
 ../src/peripherals/bipump.c \
 ../src/peripherals/bme280.c \
+../src/peripherals/heater.c \
 ../src/peripherals/lmt01.c \
 ../src/peripherals/mpq3326.c \
 ../src/peripherals/opt4003.c \
@@ -17,6 +18,7 @@ C_SRCS += \
 C_DEPS += \
 ./src/peripherals/bipump.d \
 ./src/peripherals/bme280.d \
+./src/peripherals/heater.d \
 ./src/peripherals/lmt01.d \
 ./src/peripherals/mpq3326.d \
 ./src/peripherals/opt4003.d \
@@ -26,6 +28,7 @@ C_DEPS += \
 OBJS += \
 ./src/peripherals/bipump.obj \
 ./src/peripherals/bme280.obj \
+./src/peripherals/heater.obj \
 ./src/peripherals/lmt01.obj \
 ./src/peripherals/mpq3326.obj \
 ./src/peripherals/opt4003.obj \
@@ -35,6 +38,7 @@ OBJS += \
 OBJS__QUOTED += \
 "src\peripherals\bipump.obj" \
 "src\peripherals\bme280.obj" \
+"src\peripherals\heater.obj" \
 "src\peripherals\lmt01.obj" \
 "src\peripherals\mpq3326.obj" \
 "src\peripherals\opt4003.obj" \
@@ -44,6 +48,7 @@ OBJS__QUOTED += \
 C_DEPS__QUOTED += \
 "src\peripherals\bipump.d" \
 "src\peripherals\bme280.d" \
+"src\peripherals\heater.d" \
 "src\peripherals\lmt01.d" \
 "src\peripherals\mpq3326.d" \
 "src\peripherals\opt4003.d" \
@@ -53,6 +58,7 @@ C_DEPS__QUOTED += \
 C_SRCS__QUOTED += \
 "../src/peripherals/bipump.c" \
 "../src/peripherals/bme280.c" \
+"../src/peripherals/heater.c" \
 "../src/peripherals/lmt01.c" \
 "../src/peripherals/mpq3326.c" \
 "../src/peripherals/opt4003.c" \

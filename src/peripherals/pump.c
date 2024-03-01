@@ -13,7 +13,6 @@ void Pump_Init(Pump_Descriptor *descriptor) {
           descriptor->port,
           descriptor->pin
       );
-
 }
 
 void Pump_On(Pump_Descriptor *descriptor) {
@@ -21,13 +20,11 @@ void Pump_On(Pump_Descriptor *descriptor) {
         descriptor->port,
         descriptor->pin
     );
-
 }
 
 void Pump_Off(Pump_Descriptor *descriptor) {
     GPIO_setOutputHighOnPin(
-            descriptor->port,
-            descriptor->pin
-        );
+        descriptor->port,
+        descriptor->pin
+    );
 }
-

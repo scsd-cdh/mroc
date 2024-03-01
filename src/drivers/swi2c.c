@@ -83,23 +83,16 @@ int32_t SWI2C_Read(SWI2C_Descriptor *descriptor, uint8_t *buffer, uint16_t len) 
 
     // Check for NAK
     GPIO_setAsInputPin(descriptor->sda_port, descriptor->sda_pin);
-    GPIO_setAsInputPin(descriptor->scl_port, descriptor->scl_pin);
     TIMER_ITERATION();
     if (GPIO_getInputPinValue(descriptor->sda_port, descriptor->sda_pin) == GPIO_INPUT_PIN_HIGH)
     {
         goto I2CReadTransactionCleanUp;
     }
     GPIO_setAsOutputPin(descriptor->sda_port, descriptor->sda_pin);
-    GPIO_setAsOutputPin(descriptor->scl_port, descriptor->scl_pin);
 
     // Read data
     for (ii = 0; ii < len; ii++)
     {
-        // Waiting for our clock line to go high if the slave is stretching
-        GPIO_setAsInputPin(descriptor->scl_port, descriptor->scl_pin);
-        while (GPIO_getInputPinValue(descriptor->scl_port, descriptor->scl_pin) != GPIO_INPUT_PIN_HIGH);
-        GPIO_setAsOutputPin(descriptor->scl_port, descriptor->scl_pin);
-
         temp = 0;
         bits = 8;
 
@@ -114,6 +107,7 @@ int32_t SWI2C_Read(SWI2C_Descriptor *descriptor, uint8_t *buffer, uint16_t len) 
         );
 
         // Loop and read bit by bit
+        GPIO_setAsInputPin(descriptor->sda_port, descriptor->sda_pin);
         do
         {
             temp = (temp << 1);
@@ -123,12 +117,10 @@ int32_t SWI2C_Read(SWI2C_Descriptor *descriptor, uint8_t *buffer, uint16_t len) 
             );
             TIMER_ITERATION();
 
-            GPIO_setAsInputPin(descriptor->sda_port, descriptor->sda_pin);
             if (GPIO_getInputPinValue(descriptor->sda_port, descriptor->sda_pin) == GPIO_INPUT_PIN_HIGH)
             {
                 temp += 1;
             }
-            GPIO_setAsOutputPin(descriptor->sda_port, descriptor->sda_pin);
 
             bits = (bits - 1);
             GPIO_setOutputLowOnPin(
@@ -141,6 +133,7 @@ int32_t SWI2C_Read(SWI2C_Descriptor *descriptor, uint8_t *buffer, uint16_t len) 
 
         buffer[ii] = temp;
 
+        GPIO_setAsOutputPin(descriptor->sda_port, descriptor->sda_pin);
         if (ii == len - 1) {
             GPIO_setOutputHighOnPin(
                 descriptor->sda_port,
