@@ -46,4 +46,3 @@ bool OPT4003_Read(SWI2C_Descriptor *descriptor, uint32_t *lux) {
 
     return true;
 }
-

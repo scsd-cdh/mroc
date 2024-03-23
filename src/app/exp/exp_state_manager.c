@@ -43,7 +43,7 @@ void Exp_Init()
     instrumentState = INS_INIT;
     currentWavelength = W470NM;
 
-    // Spectrophotometer
+    // Spectrophotometer Initialize (All LEDs and sensors)
     Exp_InstrumentInit();
 
     // BME280 Initialize (Ambient temperature, pressure, humidity)
