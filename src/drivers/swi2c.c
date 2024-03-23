@@ -21,6 +21,7 @@ void SWI2C_Init(SWI2C_Descriptor *descriptor) {
 int32_t SWI2C_Read(SWI2C_Descriptor *descriptor, uint8_t *buffer, uint16_t len) {
     uint_fast8_t bits, temp;
     uint16_t ii = 0;
+    uint16_t i = 0;
 
     /* Starting the timer */
     TB0CTL = TBSSEL_2 + MC_1 + TBCLR;
@@ -79,8 +80,15 @@ int32_t SWI2C_Read(SWI2C_Descriptor *descriptor, uint8_t *buffer, uint16_t len) 
         /*
          * Waiting for our clock line to go high if the slave is stretching
          */
-        while (!(*descriptor->scl_port_in & descriptor->scl_pin))
-            ;
+        for(i = 0; i < 5000; i ++) {
+            if(*descriptor->scl_port_in & descriptor->scl_pin) {
+                break;
+            }
+
+            if(i == 4999) {
+                goto I2CReadTransactionCleanUp;
+            }
+        }
 
         /* Setup the read variables */
         temp = 0;
@@ -125,8 +133,15 @@ int32_t SWI2C_Read(SWI2C_Descriptor *descriptor, uint8_t *buffer, uint16_t len) 
         /*
          * Waiting for our clock line to go high if the slave is stretching
          */
-        while (!(*descriptor->scl_port_in & descriptor->scl_pin))
-            ;
+        for(i = 0; i < 5000; i ++) {
+            if(*descriptor->scl_port_in & descriptor->scl_pin) {
+                break;
+            }
+
+            if(i == 4999) {
+                goto I2CReadTransactionCleanUp;
+            }
+        }
 
         TIMER_ITERATION();
     }
@@ -201,7 +216,15 @@ int32_t SWI2C_Write(SWI2C_Descriptor *descriptor, uint8_t *buffer, uint16_t len)
     /*
      * Waiting for our clock line to go high if the slave is stretching
      */
-    while (!(*descriptor->scl_port_in & descriptor->scl_pin));
+    for(i = 0; i < 5000; i ++) {
+        if(*descriptor->scl_port_in & descriptor->scl_pin) {
+            break;
+        }
+
+        if(i == 4999) {
+            goto I2CWriteTransactionCleanUp;
+        }
+    }
 
     TIMER_ITERATION();
 
@@ -252,8 +275,15 @@ int32_t SWI2C_Write(SWI2C_Descriptor *descriptor, uint8_t *buffer, uint16_t len)
         /*
          * Waiting for our clock line to go high if the slave is stretching
          */
-        while (!(*descriptor->scl_port_in & descriptor->scl_pin))
-            ;
+        for(i = 0; i < 5000; i ++) {
+            if(*descriptor->scl_port_in & descriptor->scl_pin) {
+                break;
+            }
+
+            if(i == 4999) {
+                goto I2CWriteTransactionCleanUp;
+            }
+        }
 
         TIMER_ITERATION();
 
