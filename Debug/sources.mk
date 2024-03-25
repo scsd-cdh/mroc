@@ -116,6 +116,7 @@ extern \
 src/app \
 src/app/cmd \
 src/app/exp \
+src/app/hk \
 src/drivers \
 src \
 src/peripherals \

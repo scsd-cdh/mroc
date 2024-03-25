@@ -17,4 +17,8 @@ typedef struct
     uint16_t voltage_reference_current_sensing;
 } Hk_ConditionDescriptor;
 
+void HK_ConditionInit(Hk_ConditionDescriptor *descriptor);
+void HK_Read(Hk_ConditionDescriptor* descriptor);
+void HK_Update();
+
 #endif /* SRC_APP_HK_HK_CONDITION_H_ */

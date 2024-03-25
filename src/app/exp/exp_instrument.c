@@ -160,7 +160,7 @@ void Exp_InstrumentInit() {
     OPT4003_Init(&light_sensors[7]);
 
     light_sensors[8].address = OPT4003_I2C_ADDR_2;
-    light_sensors[8].sda_port_out = OPT4003_I2C_SDA_2_PxOUT
+    light_sensors[8].sda_port_out = OPT4003_I2C_SDA_2_PxOUT;
     light_sensors[8].sda_port_in = OPT4003_I2C_SDA_2_PxIN;
     light_sensors[8].sda_port_dir = OPT4003_I2C_SDA_2_PxDIR;
     light_sensors[8].sda_pin = OPT4003_I2C_SDA_2_PIN;

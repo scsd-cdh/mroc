@@ -13,6 +13,7 @@ void Pump_Init(Pump_Descriptor *descriptor) {
           descriptor->port,
           descriptor->pin
       );
+    Pump_Off(descriptor);
 }
 
 void Pump_On(Pump_Descriptor *descriptor) {

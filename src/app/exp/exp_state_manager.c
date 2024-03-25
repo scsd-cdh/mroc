@@ -10,12 +10,15 @@
 #include <src/config.h>
 #include <src/drivers/drivers.h>
 #include <src/app/app.h>
+#include <src/app/hk/hk_condition.h>
 #include <src/peripherals/lmt01.h>
 #include <src/peripherals/pump.h>
 #include <src/peripherals/bipump.h>
 #include <src/peripherals/bme280.h>
 #include <src/peripherals/valve.h>
 #include <src/peripherals/heater.h>
+
+static Hk_ConditionDescriptor hkDescriptor;
 
 static BME280_Descriptor ambientConditionDescriptor;
 static LMT01_Descriptor wellTemperatureDescriptor;
@@ -28,6 +31,8 @@ static uint8_t currentState;
 static ExperimentMonitor experimentMonitor;
 static InstrumentState instrumentState;
 static Exp_InstrumentWavelength currentWavelength;
+
+static uint16_t currentSensing = 0;
 
 static uint32_t experimentResults[14];
 
@@ -78,6 +83,9 @@ void Exp_Init()
     heaterDescriptor.port = HEATER_PORT;
     heaterDescriptor.pin = HEATER_PIN;
     Heater_Init(&heaterDescriptor);
+
+    // Housekeeping Initialize
+    HK_ConditionInit(&hkDescriptor);
 }
 
 void Exp_NextState()
@@ -109,7 +117,9 @@ void Exp_SetIdle() {
 
 void Exp_Update()
 {
-    // Update state
+    HK_Update();
+    HK_Read(&hkDescriptor);
+
     experimentMonitor.well_temperature = LMT01_Read(&wellTemperatureDescriptor);
 
     // Do experiment actions
@@ -174,6 +184,7 @@ void State_HandleActivation()
 {
     if (!experimentMonitor.valve_on) {
         Valve_Open(&valveDescriptor);
+        __delay_cycles(100);
         Pump_On(&pumpDescriptor);
         experimentMonitor.pump_timer = App_GetUptime(); // Start timer
     }
@@ -181,6 +192,7 @@ void State_HandleActivation()
     if (experimentMonitor.valve_on &&
         App_GetUptime() - experimentMonitor.pump_timer >= MIX_PUMP_DURATION) {
         Pump_Off(&pumpDescriptor);
+        __delay_cycles(100);
         Valve_Close(&valveDescriptor);
 
         experimentMonitor.last_state = currentState;

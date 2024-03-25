@@ -13,17 +13,18 @@ void Valve_Init(Valve_Descriptor *descriptor){
         descriptor->port,
         descriptor->pin
     );
+    Valve_Close(descriptor);
 }
 
 void Valve_Open(Valve_Descriptor *descriptor) {
-    GPIO_setOutputLowOnPin(
+    GPIO_setOutputHighOnPin(
         descriptor->port,
         descriptor->pin
     );
 }
 
 void Valve_Close(Valve_Descriptor *descriptor) {
-    GPIO_setOutputHighOnPin(
+    GPIO_setOutputLowOnPin(
         descriptor->port,
         descriptor->pin
     );

@@ -13,6 +13,7 @@
 #include <src/app/exp/exp_state_manager.h>
 #include <src/app/app.h>
 #include <src/drivers/drivers.h>
+#include <src/config.h>
 
 void main(void) {
     WDT_A_hold(WDT_A_BASE);     // Stop watchdog

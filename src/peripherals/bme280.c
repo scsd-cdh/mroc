@@ -75,22 +75,19 @@ void USCI_A0_ISR(void)
     switch(__even_in_range(UCA0IV, USCI_SPI_UCTXIFG))
     {
         case USCI_SPI_UCRXIFG:      // UCRXIFG
-            //USCI_A0 TX buffer ready?
-            while (!EUSCI_A_SPI_getInterruptStatus(EUSCI_A0_BASE,
-                EUSCI_A_SPI_TRANSMIT_INTERRUPT));
-
-            RXData = EUSCI_A_SPI_receiveData(EUSCI_A0_BASE);
-
-            //Increment data
-            TXData++;
-
-            //Send next value
-            EUSCI_A_SPI_transmitData(EUSCI_A0_BASE,
-                TXData
-                );
-
-            //Delay between transmissions for slave to process information
-            __delay_cycles(40);
+//            //USCI_A0 TX buffer ready?
+//            while (!EUSCI_A_SPI_getInterruptStatus(EUSCI_A0_BASE,
+//                EUSCI_A_SPI_TRANSMIT_INTERRUPT));
+//
+//            RXData = EUSCI_A_SPI_receiveData(EUSCI_A0_BASE);
+//
+//            //Send next value
+//            EUSCI_A_SPI_transmitData(EUSCI_A0_BASE,
+//                TXData
+//                );
+//
+//            //Delay between transmissions for slave to process information
+//            __delay_cycles(40);
             break;
         default:
             break;

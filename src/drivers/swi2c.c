@@ -167,6 +167,7 @@ int32_t SWI2C_Read(SWI2C_Descriptor *descriptor, uint8_t *buffer, uint16_t len) 
 int32_t SWI2C_Write(SWI2C_Descriptor *descriptor, uint8_t *buffer, uint16_t len) {
     uint_fast8_t bits, temp;
     uint16_t ii = 0;
+    uint16_t i = 0;
 
     // Start the timer
     TB0CTL = TBSSEL_2 + MC_1 + TBCLR;
