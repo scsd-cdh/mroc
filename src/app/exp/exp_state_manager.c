@@ -32,9 +32,25 @@ static ExperimentMonitor experimentMonitor;
 static InstrumentState instrumentState;
 static Exp_InstrumentWavelength currentWavelength;
 
-static uint16_t currentSensing = 0;
-
 static uint32_t experimentResults[14];
+
+void Exp_ExitState() {
+    experimentMonitor.bipump_on = false;
+    experimentMonitor.valve_on = false;
+    experimentMonitor.pump_on = false;
+
+    Bipump_Off(&bipumpDescriptor);
+    Pump_Off(&pumpDescriptor);
+    __delay_cycles(10000);
+    Valve_Close(&valveDescriptor);
+
+    Exp_InstrumentLEDsOff(W470NM);
+    Exp_InstrumentLEDsOff(W570NM);
+    Exp_InstrumentLEDsOff(W630NM);
+    Exp_InstrumentLEDsOff(W850NM);
+
+    instrumentState = INS_INIT;
+}
 
 void Exp_Init()
 {
@@ -52,6 +68,15 @@ void Exp_Init()
     Exp_InstrumentInit();
 
     // BME280 Initialize (Ambient temperature, pressure, humidity)
+    ambientConditionDescriptor.miso_port = BME_SDO_PORT;
+    ambientConditionDescriptor.miso_pin = BME_SDO_PIN;
+    ambientConditionDescriptor.cs_port = BME_CS_PORT;
+    ambientConditionDescriptor.cs_pin = BME_CS_PIN;
+    ambientConditionDescriptor.sck_port = BME_SCK_PORT;
+    ambientConditionDescriptor.sck_pin = BME_SCK_PIN;
+    ambientConditionDescriptor.mosi_port = BME_SDI_PORT;
+    ambientConditionDescriptor.mosi_pin = BME_SDI_PIN;
+    BME280_Init(&ambientConditionDescriptor);
 
     // LMT01 Initialize (Well temperature)
     wellTemperatureDescriptor.port = LMT01_PORT;
@@ -121,6 +146,7 @@ void Exp_Update()
     HK_Read(&hkDescriptor);
 
     experimentMonitor.well_temperature = LMT01_Read(&wellTemperatureDescriptor);
+    BME280_Read(&experimentMonitor);
 
     // Do experiment actions
     switch(currentState) {
@@ -131,7 +157,7 @@ void Exp_Update()
         State_HandleActivation();
         break;
     case STATE_GROWTH:
-        State_HandlePreparation();
+        State_HandleGrowth();
         break;
     case STATE_INDUCTION:
         State_HandleInduction();
@@ -161,16 +187,22 @@ bool State_IsIdle() {
 
 void State_HandlePreparation()
 {
-    if (experimentMonitor.well_temperature > MIN_EXP_TEMP &&
-        experimentMonitor.ambient_temperature > MIN_EXP_TEMP &&
-        !experimentMonitor.bipump_on) {
+    if(!experimentMonitor.bipump_on) {
         Bipump_Forward(&bipumpDescriptor);
         experimentMonitor.bipump_timer = App_GetUptime(); // Start timer
+        experimentMonitor.bipump_on = true;
     }
+//    if (experimentMonitor.well_temperature > MIN_EXP_TEMP &&
+//        experimentMonitor.ambient_temperature > MIN_EXP_TEMP &&
+//        !experimentMonitor.bipump_on) {
+//        Bipump_Forward(&bipumpDescriptor);
+//        experimentMonitor.bipump_timer = App_GetUptime(); // Start timer
+//    }
 
     if(experimentMonitor.bipump_on &&
         App_GetUptime() - experimentMonitor.bipump_timer >= MIX_PUMP_DURATION) {
         Bipump_Off(&bipumpDescriptor);
+        experimentMonitor.bipump_on = false;
 
         experimentMonitor.last_state = currentState;
         experimentMonitor.progress = STATE_COMPLETE;
@@ -184,23 +216,26 @@ void State_HandleActivation()
 {
     if (!experimentMonitor.valve_on) {
         Valve_Open(&valveDescriptor);
-        __delay_cycles(100);
+        __delay_cycles(10000);
         Pump_On(&pumpDescriptor);
         experimentMonitor.pump_timer = App_GetUptime(); // Start timer
+        experimentMonitor.valve_on = true;
+        experimentMonitor.pump_on = true;
     }
 
     if (experimentMonitor.valve_on &&
         App_GetUptime() - experimentMonitor.pump_timer >= MIX_PUMP_DURATION) {
         Pump_Off(&pumpDescriptor);
-        __delay_cycles(100);
+        __delay_cycles(10000);
         Valve_Close(&valveDescriptor);
+        experimentMonitor.valve_on = false;
+        experimentMonitor.pump_on = false;
 
         experimentMonitor.last_state = currentState;
         experimentMonitor.progress = STATE_COMPLETE;
         experimentMonitor.uptime_seconds = App_GetUptime() - experimentMonitor.uptime_seconds;
 
         currentWavelength = W630NM;
-
         currentState = STATE_IDLE;
     }
 }

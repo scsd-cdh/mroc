@@ -20,7 +20,7 @@
 #define MAX_VIABLE_EXP_TEMP     40          // Celsius
 #define MIN_EXP_TEMP            20          // Celsius
 #define MAX_EXP_TEMP            37          // Celsius
-#define MIX_PUMP_DURATION       20          // Seconds
+#define MIX_PUMP_DURATION       20         // Seconds
 #define WELL_COUNT              14          // Units
 
 // External I2C Buses
@@ -50,6 +50,14 @@
 #define PUMP_PIN                GPIO_PIN3
 
 // BME280 Pinout
+#define BME_SDO_PORT            GPIO_PORT_P4
+#define BME_SDO_PIN             GPIO_PIN3
+#define BME_CS_PORT             GPIO_PORT_P1
+#define BME_CS_PIN              GPIO_PIN4
+#define BME_SCK_PORT            GPIO_PORT_P1
+#define BME_SCK_PIN             GPIO_PIN5
+#define BME_SDI_PORT            GPIO_PORT_P2
+#define BME_SDI_PIN             GPIO_PIN0
 
 // LMT01 Pinout
 #define LMT01_PORT              GPIO_PORT_P2

@@ -9,11 +9,7 @@
 #define SRC_PERIPHERALS_BME280_H_
 
 #include <stdint.h>
-#include <extern/bme280.h>
-
-typedef struct bme280_data BME280_Data;
-typedef struct bme280_dev BME280_Device;
-typedef struct bme280_settings BME280_Settings;
+#include <src/app/exp/exp_state_manager.h>
 
 typedef struct {
     uint8_t miso_port;
@@ -26,8 +22,14 @@ typedef struct {
     uint16_t cs_pin;
 } BME280_Descriptor;
 
-int8_t BME280_Init(BME280_Descriptor *descriptor);
-int8_t BME280_Read(BME280_Descriptor *descriptor, BME280_Data *data);
+typedef struct  {
+    uint16_t humidity;
+    uint32_t temperature;
+    uint32_t pressure;
+} BME280_Data;
+
+void BME280_Init(BME280_Descriptor *descriptor);
+void BME280_Read(ExperimentMonitor *data);
 
 
 #endif /* SRC_PERIPHERALS_BME280_H_ */

@@ -34,6 +34,7 @@ typedef struct {
     bool valve_on;
 }ExperimentMonitor;
 
+void Exp_ExitState();
 void Exp_Init();
 void Exp_NextState();
 void Exp_SetState(uint8_t newState);

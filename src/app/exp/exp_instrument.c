@@ -22,6 +22,16 @@ void Exp_InstrumentInit() {
     wavelength_state[W630NM] = false;
     wavelength_state[W850NM] = false;
 
+    GPIO_setAsOutputPin(
+        GPIO_PORT_P5,
+        GPIO_PIN1
+    );
+
+    GPIO_setOutputLowOnPin(
+        GPIO_PORT_P5,
+        GPIO_PIN1
+    );
+
     wavelength_descriptors[W470NM].address = MPQ3326_W470_ADDR;
     wavelength_descriptors[W470NM].sda_port_out = MPQ3326_I2C_SDA_PxOUT;
     wavelength_descriptors[W470NM].sda_port_in = MPQ3326_I2C_SDA_PxIN;
