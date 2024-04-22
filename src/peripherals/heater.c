@@ -27,14 +27,15 @@ void Heater_Init(Heater_Descriptor *descriptor) {
     TA1CCTL1 = HEATER_PWM_TA_CCTL;
     TA1CCR0 = HEATER_PWM_TA_CCR0;
     TA1CCR1 = HEATER_PWM_TA_CCR1;
+    Heater_Off();
 }
 
-void Heater_Write(Heater_Descriptor *descriptor, uint8_t value) {
+void Heater_Write(uint8_t value) {
     if(value > 100) value = 100;
     TA1CCR1 = (value / 100) * TA1CCR0;
 }
 
-void Heater_Off(Heater_Descriptor *descriptor) {
+void Heater_Off() {
     TA1CCR1 = 0;
 }
 

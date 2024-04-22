@@ -8,6 +8,8 @@
 #include "mpq3326.h"
 #include <src/drivers/drivers.h>
 
+#define BRIGHTNESS        0b00000001
+
 #define MPQ3326_REG_PWM_DIMMING_FREQ 0x00
 #define MPQ3326_REG_CONTROL          0x01
 #define MPQ3326_REG_CH_EN9TO16       0x04
@@ -15,13 +17,23 @@
 #define MPQ3326_REG_CURRENT_LIMIT    0x0A
 #define MPQ3326_CHANNELS             16
 
+#define MPQ3326_REG_CONTROL_VAL      0xB1
+
 void MPQ3326_Init(SWI2C_Descriptor *descriptor) {
     SWI2C_Init(descriptor);
 
     uint8_t buffer[2];
     buffer[0] = MPQ3326_REG_CONTROL;
-    buffer[1] = 1;
+    buffer[1] = MPQ3326_REG_CONTROL_VAL;
     SWI2C_Write(descriptor, buffer, 2);
+
+    uint8_t i;
+
+    for(i = 0x0A; i < 0x38; i += 3) {
+        buffer[0] = i;
+        buffer[1] = BRIGHTNESS;
+        SWI2C_Write(descriptor, buffer, 2);
+    }
 }
 
 void MPQ3326_TurnLEDsOn(SWI2C_Descriptor *descriptor) {
@@ -33,11 +45,6 @@ void MPQ3326_TurnLEDsOn(SWI2C_Descriptor *descriptor) {
     buffer[0] = MPQ3326_REG_CH_EN9TO16;
     buffer[1] = 0xFF;
     SWI2C_Write(descriptor, buffer, 2);
-
-    GPIO_setOutputHighOnPin(
-            GPIO_PORT_P5,
-            GPIO_PIN1
-        );
 }
 
 void MPQ3326_TurnLEDsOff(SWI2C_Descriptor *descriptor) {
@@ -49,10 +56,6 @@ void MPQ3326_TurnLEDsOff(SWI2C_Descriptor *descriptor) {
     buffer[0] = MPQ3326_REG_CH_EN9TO16;
     buffer[1] = 0;
     SWI2C_Write(descriptor, buffer, 2);
-    GPIO_setOutputLowOnPin(
-            GPIO_PORT_P5,
-            GPIO_PIN1
-        );
 }
 
 void MPQ3326_SetBrightness(SWI2C_Descriptor *descriptor, uint8_t brightness) {

@@ -17,8 +17,8 @@ uint8_t Cmd_ReadRegister();
 void Cmd_SetSystemStatus(uint8_t state, uint32_t uptime_seconds);
 void Cmd_SetExperimentStatusRegister(uint8_t last_state, uint8_t progress, uint32_t uptime);
 void Cmd_SetHardwareHealthStatusRegister();
-void Cmd_SetEnvironmentInformationRegister(uint16_t well_temperature, uint16_t ambient_temperature, uint16_t ambient_pressure, uint16_t ambient_humidity);
-void Cmd_SetPhotosensorResults();
+void Cmd_SetEnvironmentInformationRegister(uint16_t well_temperature, int32_t ambient_temperature, uint32_t ambient_pressure, uint32_t ambient_humidity);
+void Cmd_SetPhotosensorResults(uint8_t wavelength, uint32_t results[WELL_COUNT]);
 void Cmd_SetTelecommandAcknowledge(uint8_t tc_id, uint8_t tc_result);
 
 typedef struct
@@ -35,19 +35,21 @@ typedef struct
 
 typedef struct
 {
-    uint8_t leds_status[7];
-    uint8_t other_devices;
+    uint16_t pump_current_sensing;
+    uint16_t heater_current_sensing;
+    uint16_t voltage_reference_current_sensing;
 } __attribute__((packed)) Cmd_HardwareHealthStatusRegister;
 
 typedef struct
 {
     uint16_t well_temperature;
-    uint16_t ambient_temperature;
-    uint16_t ambient_pressure;
-    uint16_t ambient_humidity;
+    int32_t ambient_temperature;
+    uint32_t ambient_pressure;
+    uint32_t ambient_humidity;
 } __attribute__((packed)) Cmd_EnvironmentInformationRegister;
 
 typedef struct {
+    uint8_t wavelength;
     uint32_t results[WELL_COUNT];
 }__attribute__((packed)) Cmd_PhotoSensorResultsRegister;
 

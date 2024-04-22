@@ -23,57 +23,57 @@ void Exp_InstrumentInit() {
     wavelength_state[W850NM] = false;
 
     GPIO_setAsOutputPin(
-        GPIO_PORT_P5,
-        GPIO_PIN1
+        MPQ3326_ENABLE_PORT,
+        MPQ3326_ENABLE_PIN
     );
 
-    GPIO_setOutputLowOnPin(
-        GPIO_PORT_P5,
-        GPIO_PIN1
+    GPIO_setOutputHighOnPin(
+        MPQ3326_ENABLE_PORT,
+        MPQ3326_ENABLE_PIN
     );
 
-    wavelength_descriptors[W470NM].address = MPQ3326_W470_ADDR;
-    wavelength_descriptors[W470NM].sda_port_out = MPQ3326_I2C_SDA_PxOUT;
-    wavelength_descriptors[W470NM].sda_port_in = MPQ3326_I2C_SDA_PxIN;
-    wavelength_descriptors[W470NM].sda_port_dir = MPQ3326_I2C_SDA_PxDIR;
-    wavelength_descriptors[W470NM].sda_pin = MPQ3326_I2C_SDA_PIN;
-    wavelength_descriptors[W470NM].scl_port_out = MPQ3326_I2C_SCL_PxOUT;
-    wavelength_descriptors[W470NM].scl_port_in = MPQ3326_I2C_SCL_PxIN;
-    wavelength_descriptors[W470NM].scl_port_dir = MPQ3326_I2C_SCL_PxDIR;
-    wavelength_descriptors[W470NM].scl_pin = MPQ3326_I2C_SCL_PIN;
+    wavelength_descriptors[W470NM].address =        MPQ3326_W470_ADDR;
+    wavelength_descriptors[W470NM].sda_port_out =   &MPQ3326_I2C_SDA_PxOUT;
+    wavelength_descriptors[W470NM].sda_port_in =    &MPQ3326_I2C_SDA_PxIN;
+    wavelength_descriptors[W470NM].sda_port_dir =   &MPQ3326_I2C_SDA_PxDIR;
+    wavelength_descriptors[W470NM].sda_pin =        MPQ3326_I2C_SDA_PIN;
+    wavelength_descriptors[W470NM].scl_port_out =   &MPQ3326_I2C_SCL_PxOUT;
+    wavelength_descriptors[W470NM].scl_port_in =    &MPQ3326_I2C_SCL_PxIN;
+    wavelength_descriptors[W470NM].scl_port_dir =   &MPQ3326_I2C_SCL_PxDIR;
+    wavelength_descriptors[W470NM].scl_pin =        MPQ3326_I2C_SCL_PIN;
     MPQ3326_Init(&wavelength_descriptors[W470NM]);
 
-    wavelength_descriptors[W570NM].address = MPQ3326_W570_ADDR;
-    wavelength_descriptors[W470NM].sda_port_out = MPQ3326_I2C_SDA_PxOUT;
-    wavelength_descriptors[W470NM].sda_port_in = MPQ3326_I2C_SDA_PxIN;
-    wavelength_descriptors[W470NM].sda_port_dir = MPQ3326_I2C_SDA_PxDIR;
-    wavelength_descriptors[W470NM].sda_pin = MPQ3326_I2C_SDA_PIN;
-    wavelength_descriptors[W470NM].scl_port_out = MPQ3326_I2C_SCL_PxOUT;
-    wavelength_descriptors[W470NM].scl_port_in = MPQ3326_I2C_SCL_PxIN;
-    wavelength_descriptors[W470NM].scl_port_dir = MPQ3326_I2C_SCL_PxDIR;
-    wavelength_descriptors[W470NM].scl_pin = MPQ3326_I2C_SCL_PIN;
+    wavelength_descriptors[W570NM].address =        MPQ3326_W570_ADDR;
+    wavelength_descriptors[W570NM].sda_port_out =   &MPQ3326_I2C_SDA_PxOUT;
+    wavelength_descriptors[W570NM].sda_port_in =    &MPQ3326_I2C_SDA_PxIN;
+    wavelength_descriptors[W570NM].sda_port_dir =   &MPQ3326_I2C_SDA_PxDIR;
+    wavelength_descriptors[W570NM].sda_pin =        MPQ3326_I2C_SDA_PIN;
+    wavelength_descriptors[W570NM].scl_port_out =   &MPQ3326_I2C_SCL_PxOUT;
+    wavelength_descriptors[W570NM].scl_port_in =    &MPQ3326_I2C_SCL_PxIN;
+    wavelength_descriptors[W570NM].scl_port_dir =   &MPQ3326_I2C_SCL_PxDIR;
+    wavelength_descriptors[W570NM].scl_pin =        MPQ3326_I2C_SCL_PIN;
     MPQ3326_Init(&wavelength_descriptors[W570NM]);
 
-    wavelength_descriptors[W630NM].address = MPQ3326_W630_ADDR;
-    wavelength_descriptors[W470NM].sda_port_out = MPQ3326_I2C_SDA_PxOUT;
-    wavelength_descriptors[W470NM].sda_port_in = MPQ3326_I2C_SDA_PxIN;
-    wavelength_descriptors[W470NM].sda_port_dir = MPQ3326_I2C_SDA_PxDIR;
-    wavelength_descriptors[W470NM].sda_pin = MPQ3326_I2C_SDA_PIN;
-    wavelength_descriptors[W470NM].scl_port_out = MPQ3326_I2C_SCL_PxOUT;
-    wavelength_descriptors[W470NM].scl_port_in = MPQ3326_I2C_SCL_PxIN;
-    wavelength_descriptors[W470NM].scl_port_dir = MPQ3326_I2C_SCL_PxDIR;
-    wavelength_descriptors[W470NM].scl_pin = MPQ3326_I2C_SCL_PIN;
+    wavelength_descriptors[W630NM].address =        MPQ3326_W630_ADDR;
+    wavelength_descriptors[W630NM].sda_port_out =   &MPQ3326_I2C_SDA_PxOUT;
+    wavelength_descriptors[W630NM].sda_port_in =    &MPQ3326_I2C_SDA_PxIN;
+    wavelength_descriptors[W630NM].sda_port_dir =   &MPQ3326_I2C_SDA_PxDIR;
+    wavelength_descriptors[W630NM].sda_pin =        MPQ3326_I2C_SDA_PIN;
+    wavelength_descriptors[W630NM].scl_port_out =   &MPQ3326_I2C_SCL_PxOUT;
+    wavelength_descriptors[W630NM].scl_port_in =    &MPQ3326_I2C_SCL_PxIN;
+    wavelength_descriptors[W630NM].scl_port_dir =   &MPQ3326_I2C_SCL_PxDIR;
+    wavelength_descriptors[W630NM].scl_pin =        MPQ3326_I2C_SCL_PIN;
     MPQ3326_Init(&wavelength_descriptors[W630NM]);
 
-    wavelength_descriptors[W850NM].address = MPQ3326_W850_ADDR;
-    wavelength_descriptors[W470NM].sda_port_out = MPQ3326_I2C_SDA_PxOUT;
-    wavelength_descriptors[W470NM].sda_port_in = MPQ3326_I2C_SDA_PxIN;
-    wavelength_descriptors[W470NM].sda_port_dir = MPQ3326_I2C_SDA_PxDIR;
-    wavelength_descriptors[W470NM].sda_pin = MPQ3326_I2C_SDA_PIN;
-    wavelength_descriptors[W470NM].scl_port_out = MPQ3326_I2C_SCL_PxOUT;
-    wavelength_descriptors[W470NM].scl_port_in = MPQ3326_I2C_SCL_PxIN;
-    wavelength_descriptors[W470NM].scl_port_dir = MPQ3326_I2C_SCL_PxDIR;
-    wavelength_descriptors[W470NM].scl_pin = MPQ3326_I2C_SCL_PIN;
+    wavelength_descriptors[W850NM].address =        MPQ3326_W850_ADDR;
+    wavelength_descriptors[W850NM].sda_port_out =   &MPQ3326_I2C_SDA_PxOUT;
+    wavelength_descriptors[W850NM].sda_port_in =    &MPQ3326_I2C_SDA_PxIN;
+    wavelength_descriptors[W850NM].sda_port_dir =   &MPQ3326_I2C_SDA_PxDIR;
+    wavelength_descriptors[W850NM].sda_pin =        MPQ3326_I2C_SDA_PIN;
+    wavelength_descriptors[W850NM].scl_port_out =   &MPQ3326_I2C_SCL_PxOUT;
+    wavelength_descriptors[W850NM].scl_port_in =    &MPQ3326_I2C_SCL_PxIN;
+    wavelength_descriptors[W850NM].scl_port_dir =   &MPQ3326_I2C_SCL_PxDIR;
+    wavelength_descriptors[W850NM].scl_pin =        MPQ3326_I2C_SCL_PIN;
     MPQ3326_Init(&wavelength_descriptors[W850NM]);
 
     MPQ3326_TurnLEDsOff(&wavelength_descriptors[W470NM]);
@@ -81,157 +81,157 @@ void Exp_InstrumentInit() {
     MPQ3326_TurnLEDsOff(&wavelength_descriptors[W630NM]);
     MPQ3326_TurnLEDsOff(&wavelength_descriptors[W850NM]);
 
-    light_sensors[0].address = OPT4003_I2C_ADDR_4;
-    light_sensors[0].sda_port_out = OPT4003_I2C_SDA_3_PxOUT;
-    light_sensors[0].sda_port_in = OPT4003_I2C_SDA_3_PxIN;
-    light_sensors[0].sda_port_dir = OPT4003_I2C_SDA_3_PxDIR;
-    light_sensors[0].sda_pin = OPT4003_I2C_SDA_3_PIN;
-    light_sensors[0].scl_port_out = OPT4003_I2C_SCL_3_PxOUT;
-    light_sensors[0].scl_port_in = OPT4003_I2C_SCL_3_PxIN;
-    light_sensors[0].scl_port_dir = OPT4003_I2C_SCL_3_PxDIR;
-    light_sensors[0].scl_pin = OPT4003_I2C_SCL_3_PIN;
+    light_sensors[0].address =          OPT4003_I2C_ADDR_4;
+    light_sensors[0].sda_port_out =     &OPT4003_I2C_SDA_3_PxOUT;
+    light_sensors[0].sda_port_in =      &OPT4003_I2C_SDA_3_PxIN;
+    light_sensors[0].sda_port_dir =     &OPT4003_I2C_SDA_3_PxDIR;
+    light_sensors[0].sda_pin =          OPT4003_I2C_SDA_3_PIN;
+    light_sensors[0].scl_port_out =     &OPT4003_I2C_SCL_3_PxOUT;
+    light_sensors[0].scl_port_in =      &OPT4003_I2C_SCL_3_PxIN;
+    light_sensors[0].scl_port_dir =     &OPT4003_I2C_SCL_3_PxDIR;
+    light_sensors[0].scl_pin =          OPT4003_I2C_SCL_3_PIN;
     OPT4003_Init(&light_sensors[0]);
 
     light_sensors[1].address = OPT4003_I2C_ADDR_1;
-    light_sensors[1].sda_port_out = OPT4003_I2C_SDA_3_PxOUT;
-    light_sensors[1].sda_port_in = OPT4003_I2C_SDA_3_PxIN;
-    light_sensors[1].sda_port_dir = OPT4003_I2C_SDA_3_PxDIR;
+    light_sensors[1].sda_port_out = &OPT4003_I2C_SDA_3_PxOUT;
+    light_sensors[1].sda_port_in = &OPT4003_I2C_SDA_3_PxIN;
+    light_sensors[1].sda_port_dir = &OPT4003_I2C_SDA_3_PxDIR;
     light_sensors[1].sda_pin = OPT4003_I2C_SDA_3_PIN;
-    light_sensors[1].scl_port_out = OPT4003_I2C_SCL_3_PxOUT;
-    light_sensors[1].scl_port_in = OPT4003_I2C_SCL_3_PxIN;
-    light_sensors[1].scl_port_dir = OPT4003_I2C_SCL_3_PxDIR;
+    light_sensors[1].scl_port_out = &OPT4003_I2C_SCL_3_PxOUT;
+    light_sensors[1].scl_port_in = &OPT4003_I2C_SCL_3_PxIN;
+    light_sensors[1].scl_port_dir = &OPT4003_I2C_SCL_3_PxDIR;
     light_sensors[1].scl_pin = OPT4003_I2C_SCL_3_PIN;
     OPT4003_Init(&light_sensors[1]);
 
     light_sensors[2].address = OPT4003_I2C_ADDR_3;
-    light_sensors[2].sda_port_out = OPT4003_I2C_SDA_3_PxOUT;
-    light_sensors[2].sda_port_in = OPT4003_I2C_SDA_3_PxIN;
-    light_sensors[2].sda_port_dir = OPT4003_I2C_SDA_3_PxDIR;
+    light_sensors[2].sda_port_out = &OPT4003_I2C_SDA_3_PxOUT;
+    light_sensors[2].sda_port_in = &OPT4003_I2C_SDA_3_PxIN;
+    light_sensors[2].sda_port_dir = &OPT4003_I2C_SDA_3_PxDIR;
     light_sensors[2].sda_pin = OPT4003_I2C_SDA_3_PIN;
-    light_sensors[2].scl_port_out = OPT4003_I2C_SCL_3_PxOUT;
-    light_sensors[2].scl_port_in = OPT4003_I2C_SCL_3_PxIN;
-    light_sensors[2].scl_port_dir = OPT4003_I2C_SCL_3_PxDIR;
+    light_sensors[2].scl_port_out = &OPT4003_I2C_SCL_3_PxOUT;
+    light_sensors[2].scl_port_in = &OPT4003_I2C_SCL_3_PxIN;
+    light_sensors[2].scl_port_dir = &OPT4003_I2C_SCL_3_PxDIR;
     light_sensors[2].scl_pin = OPT4003_I2C_SCL_3_PIN;
     OPT4003_Init(&light_sensors[2]);
 
     light_sensors[3].address = OPT4003_I2C_ADDR_2;
-    light_sensors[3].sda_port_out = OPT4003_I2C_SDA_3_PxOUT;
-    light_sensors[3].sda_port_in = OPT4003_I2C_SDA_3_PxIN;
-    light_sensors[3].sda_port_dir = OPT4003_I2C_SDA_3_PxDIR;
+    light_sensors[3].sda_port_out = &OPT4003_I2C_SDA_3_PxOUT;
+    light_sensors[3].sda_port_in = &OPT4003_I2C_SDA_3_PxIN;
+    light_sensors[3].sda_port_dir = &OPT4003_I2C_SDA_3_PxDIR;
     light_sensors[3].sda_pin = OPT4003_I2C_SDA_3_PIN;
-    light_sensors[3].scl_port_out = OPT4003_I2C_SCL_3_PxOUT;
-    light_sensors[3].scl_port_in = OPT4003_I2C_SCL_3_PxIN;
-    light_sensors[3].scl_port_dir = OPT4003_I2C_SCL_3_PxDIR;
+    light_sensors[3].scl_port_out = &OPT4003_I2C_SCL_3_PxOUT;
+    light_sensors[3].scl_port_in = &OPT4003_I2C_SCL_3_PxIN;
+    light_sensors[3].scl_port_dir = &OPT4003_I2C_SCL_3_PxDIR;
     light_sensors[3].scl_pin = OPT4003_I2C_SCL_3_PIN;
     OPT4003_Init(&light_sensors[3]);
 
     light_sensors[4].address = OPT4003_I2C_ADDR_4;
-    light_sensors[4].sda_port_out = OPT4003_I2C_SDA_1_PxOUT;
-    light_sensors[4].sda_port_in = OPT4003_I2C_SDA_1_PxIN;
-    light_sensors[4].sda_port_dir = OPT4003_I2C_SDA_1_PxDIR;
+    light_sensors[4].sda_port_out = &OPT4003_I2C_SDA_1_PxOUT;
+    light_sensors[4].sda_port_in = &OPT4003_I2C_SDA_1_PxIN;
+    light_sensors[4].sda_port_dir = &OPT4003_I2C_SDA_1_PxDIR;
     light_sensors[4].sda_pin = OPT4003_I2C_SDA_1_PIN;
-    light_sensors[4].scl_port_out = OPT4003_I2C_SCL_1_PxOUT;
-    light_sensors[4].scl_port_in = OPT4003_I2C_SCL_1_PxIN;
-    light_sensors[4].scl_port_dir = OPT4003_I2C_SCL_1_PxDIR;
+    light_sensors[4].scl_port_out = &OPT4003_I2C_SCL_1_PxOUT;
+    light_sensors[4].scl_port_in = &OPT4003_I2C_SCL_1_PxIN;
+    light_sensors[4].scl_port_dir = &OPT4003_I2C_SCL_1_PxDIR;
     light_sensors[4].scl_pin = OPT4003_I2C_SCL_1_PIN;
     OPT4003_Init(&light_sensors[4]);
 
     light_sensors[5].address = OPT4003_I2C_ADDR_3;
-    light_sensors[5].sda_port_out = OPT4003_I2C_SDA_1_PxOUT;
-    light_sensors[5].sda_port_in = OPT4003_I2C_SDA_1_PxIN;
-    light_sensors[5].sda_port_dir = OPT4003_I2C_SDA_1_PxDIR;
+    light_sensors[5].sda_port_out = &OPT4003_I2C_SDA_1_PxOUT;
+    light_sensors[5].sda_port_in = &OPT4003_I2C_SDA_1_PxIN;
+    light_sensors[5].sda_port_dir = &OPT4003_I2C_SDA_1_PxDIR;
     light_sensors[5].sda_pin = OPT4003_I2C_SDA_1_PIN;
-    light_sensors[5].scl_port_out = OPT4003_I2C_SCL_1_PxOUT;
-    light_sensors[5].scl_port_in = OPT4003_I2C_SCL_1_PxIN;
-    light_sensors[5].scl_port_dir = OPT4003_I2C_SCL_1_PxDIR;
+    light_sensors[5].scl_port_out = &OPT4003_I2C_SCL_1_PxOUT;
+    light_sensors[5].scl_port_in = &OPT4003_I2C_SCL_1_PxIN;
+    light_sensors[5].scl_port_dir = &OPT4003_I2C_SCL_1_PxDIR;
     light_sensors[5].scl_pin = OPT4003_I2C_SCL_1_PIN;
     OPT4003_Init(&light_sensors[5]);
 
     light_sensors[6].address = OPT4003_I2C_ADDR_2;
-    light_sensors[6].sda_port_out = OPT4003_I2C_SDA_1_PxOUT;
-    light_sensors[6].sda_port_in = OPT4003_I2C_SDA_1_PxIN;
-    light_sensors[6].sda_port_dir = OPT4003_I2C_SDA_1_PxDIR;
+    light_sensors[6].sda_port_out = &OPT4003_I2C_SDA_1_PxOUT;
+    light_sensors[6].sda_port_in = &OPT4003_I2C_SDA_1_PxIN;
+    light_sensors[6].sda_port_dir = &OPT4003_I2C_SDA_1_PxDIR;
     light_sensors[6].sda_pin = OPT4003_I2C_SDA_1_PIN;
-    light_sensors[6].scl_port_out = OPT4003_I2C_SCL_1_PxOUT;
-    light_sensors[6].scl_port_in = OPT4003_I2C_SCL_1_PxIN;
-    light_sensors[6].scl_port_dir = OPT4003_I2C_SCL_1_PxDIR;
+    light_sensors[6].scl_port_out = &OPT4003_I2C_SCL_1_PxOUT;
+    light_sensors[6].scl_port_in = &OPT4003_I2C_SCL_1_PxIN;
+    light_sensors[6].scl_port_dir = &OPT4003_I2C_SCL_1_PxDIR;
     light_sensors[6].scl_pin = OPT4003_I2C_SCL_1_PIN;
     OPT4003_Init(&light_sensors[6]);
 
     light_sensors[7].address = OPT4003_I2C_ADDR_1;
-    light_sensors[7].sda_port_out = OPT4003_I2C_SDA_1_PxOUT;
-    light_sensors[7].sda_port_in = OPT4003_I2C_SDA_1_PxIN;
-    light_sensors[7].sda_port_dir = OPT4003_I2C_SDA_1_PxDIR;
+    light_sensors[7].sda_port_out = &OPT4003_I2C_SDA_1_PxOUT;
+    light_sensors[7].sda_port_in = &OPT4003_I2C_SDA_1_PxIN;
+    light_sensors[7].sda_port_dir = &OPT4003_I2C_SDA_1_PxDIR;
     light_sensors[7].sda_pin = OPT4003_I2C_SDA_1_PIN;
-    light_sensors[7].scl_port_out = OPT4003_I2C_SCL_1_PxOUT;
-    light_sensors[7].scl_port_in = OPT4003_I2C_SCL_1_PxIN;
-    light_sensors[7].scl_port_dir = OPT4003_I2C_SCL_1_PxDIR;
+    light_sensors[7].scl_port_out = &OPT4003_I2C_SCL_1_PxOUT;
+    light_sensors[7].scl_port_in = &OPT4003_I2C_SCL_1_PxIN;
+    light_sensors[7].scl_port_dir = &OPT4003_I2C_SCL_1_PxDIR;
     light_sensors[7].scl_pin = OPT4003_I2C_SCL_1_PIN;
     OPT4003_Init(&light_sensors[7]);
 
     light_sensors[8].address = OPT4003_I2C_ADDR_2;
-    light_sensors[8].sda_port_out = OPT4003_I2C_SDA_2_PxOUT;
-    light_sensors[8].sda_port_in = OPT4003_I2C_SDA_2_PxIN;
-    light_sensors[8].sda_port_dir = OPT4003_I2C_SDA_2_PxDIR;
+    light_sensors[8].sda_port_out = &OPT4003_I2C_SDA_2_PxOUT;
+    light_sensors[8].sda_port_in = &OPT4003_I2C_SDA_2_PxIN;
+    light_sensors[8].sda_port_dir = &OPT4003_I2C_SDA_2_PxDIR;
     light_sensors[8].sda_pin = OPT4003_I2C_SDA_2_PIN;
-    light_sensors[8].scl_port_out = OPT4003_I2C_SCL_2_PxOUT;
-    light_sensors[8].scl_port_in = OPT4003_I2C_SCL_2_PxIN;
-    light_sensors[8].scl_port_dir = OPT4003_I2C_SCL_2_PxDIR;
+    light_sensors[8].scl_port_out = &OPT4003_I2C_SCL_2_PxOUT;
+    light_sensors[8].scl_port_in = &OPT4003_I2C_SCL_2_PxIN;
+    light_sensors[8].scl_port_dir = &OPT4003_I2C_SCL_2_PxDIR;
     light_sensors[8].scl_pin = OPT4003_I2C_SCL_2_PIN;
     OPT4003_Init(&light_sensors[8]);
 
     light_sensors[9].address = OPT4003_I2C_ADDR_1;
-    light_sensors[9].sda_port_out = OPT4003_I2C_SDA_2_PxOUT;
-    light_sensors[9].sda_port_in = OPT4003_I2C_SDA_2_PxIN;
-    light_sensors[9].sda_port_dir = OPT4003_I2C_SDA_2_PxDIR;
+    light_sensors[9].sda_port_out = &OPT4003_I2C_SDA_2_PxOUT;
+    light_sensors[9].sda_port_in = &OPT4003_I2C_SDA_2_PxIN;
+    light_sensors[9].sda_port_dir = &OPT4003_I2C_SDA_2_PxDIR;
     light_sensors[9].sda_pin = OPT4003_I2C_SDA_2_PIN;
-    light_sensors[9].scl_port_out = OPT4003_I2C_SDA_2_PxOUT;
-    light_sensors[9].scl_port_in = OPT4003_I2C_SDA_2_PxIN;
-    light_sensors[9].scl_port_dir = OPT4003_I2C_SDA_2_PxDIR;
+    light_sensors[9].scl_port_out = &OPT4003_I2C_SDA_2_PxOUT;
+    light_sensors[9].scl_port_in = &OPT4003_I2C_SDA_2_PxIN;
+    light_sensors[9].scl_port_dir = &OPT4003_I2C_SDA_2_PxDIR;
     light_sensors[9].scl_pin = OPT4003_I2C_SCL_2_PIN;
     OPT4003_Init(&light_sensors[9]);
 
     light_sensors[10].address = OPT4003_I2C_ADDR_1;
-    light_sensors[10].sda_port_out = OPT4003_I2C_SDA_4_PxOUT;
-    light_sensors[10].sda_port_in = OPT4003_I2C_SDA_4_PxIN;
-    light_sensors[10].sda_port_dir = OPT4003_I2C_SDA_4_PxDIR;
+    light_sensors[10].sda_port_out = &OPT4003_I2C_SDA_4_PxOUT;
+    light_sensors[10].sda_port_in = &OPT4003_I2C_SDA_4_PxIN;
+    light_sensors[10].sda_port_dir = &OPT4003_I2C_SDA_4_PxDIR;
     light_sensors[10].sda_pin = OPT4003_I2C_SDA_4_PIN;
-    light_sensors[10].scl_port_out = OPT4003_I2C_SCL_4_PxOUT;
-    light_sensors[10].scl_port_in = OPT4003_I2C_SCL_4_PxIN;
-    light_sensors[10].scl_port_dir = OPT4003_I2C_SCL_4_PxDIR;
+    light_sensors[10].scl_port_out = &OPT4003_I2C_SCL_4_PxOUT;
+    light_sensors[10].scl_port_in = &OPT4003_I2C_SCL_4_PxIN;
+    light_sensors[10].scl_port_dir = &OPT4003_I2C_SCL_4_PxDIR;
     light_sensors[10].scl_pin = OPT4003_I2C_SCL_4_PIN;
     OPT4003_Init(&light_sensors[10]);
 
     light_sensors[11].address = OPT4003_I2C_ADDR_3;
-    light_sensors[11].sda_port_out = OPT4003_I2C_SDA_2_PxOUT;
-    light_sensors[11].sda_port_in = OPT4003_I2C_SDA_2_PxIN;
-    light_sensors[11].sda_port_dir = OPT4003_I2C_SDA_2_PxDIR;
+    light_sensors[11].sda_port_out = &OPT4003_I2C_SDA_2_PxOUT;
+    light_sensors[11].sda_port_in = &OPT4003_I2C_SDA_2_PxIN;
+    light_sensors[11].sda_port_dir = &OPT4003_I2C_SDA_2_PxDIR;
     light_sensors[11].sda_pin = OPT4003_I2C_SDA_2_PIN;
-    light_sensors[11].scl_port_out = OPT4003_I2C_SDA_2_PxOUT;
-    light_sensors[11].scl_port_in = OPT4003_I2C_SDA_2_PxIN;
-    light_sensors[11].scl_port_dir = OPT4003_I2C_SDA_2_PxDIR;
+    light_sensors[11].scl_port_out = &OPT4003_I2C_SDA_2_PxOUT;
+    light_sensors[11].scl_port_in = &OPT4003_I2C_SDA_2_PxIN;
+    light_sensors[11].scl_port_dir = &OPT4003_I2C_SDA_2_PxDIR;
     light_sensors[11].scl_pin = OPT4003_I2C_SCL_2_PIN;
     OPT4003_Init(&light_sensors[11]);
 
     light_sensors[12].address = OPT4003_I2C_ADDR_4;
-    light_sensors[12].sda_port_out = OPT4003_I2C_SDA_2_PxOUT;
-    light_sensors[12].sda_port_in = OPT4003_I2C_SDA_2_PxIN;
-    light_sensors[12].sda_port_dir = OPT4003_I2C_SDA_2_PxDIR;
+    light_sensors[12].sda_port_out = &OPT4003_I2C_SDA_2_PxOUT;
+    light_sensors[12].sda_port_in = &OPT4003_I2C_SDA_2_PxIN;
+    light_sensors[12].sda_port_dir = &OPT4003_I2C_SDA_2_PxDIR;
     light_sensors[12].sda_pin = OPT4003_I2C_SDA_2_PIN;
-    light_sensors[12].scl_port_out = OPT4003_I2C_SDA_2_PxOUT;
-    light_sensors[12].scl_port_in = OPT4003_I2C_SDA_2_PxIN;
-    light_sensors[12].scl_port_dir = OPT4003_I2C_SDA_2_PxDIR;
+    light_sensors[12].scl_port_out = &OPT4003_I2C_SDA_2_PxOUT;
+    light_sensors[12].scl_port_in = &OPT4003_I2C_SDA_2_PxIN;
+    light_sensors[12].scl_port_dir = &OPT4003_I2C_SDA_2_PxDIR;
     light_sensors[12].scl_pin = OPT4003_I2C_SCL_2_PIN;
     OPT4003_Init(&light_sensors[12]);
 
     light_sensors[13].address = OPT4003_I2C_ADDR_3;
-    light_sensors[13].sda_port_out = OPT4003_I2C_SDA_4_PxOUT;
-    light_sensors[13].sda_port_in = OPT4003_I2C_SDA_4_PxIN;
-    light_sensors[13].sda_port_dir = OPT4003_I2C_SDA_4_PxDIR;
+    light_sensors[13].sda_port_out = &OPT4003_I2C_SDA_4_PxOUT;
+    light_sensors[13].sda_port_in = &OPT4003_I2C_SDA_4_PxIN;
+    light_sensors[13].sda_port_dir = &OPT4003_I2C_SDA_4_PxDIR;
     light_sensors[13].sda_pin = OPT4003_I2C_SDA_4_PIN;
-    light_sensors[13].scl_port_out = OPT4003_I2C_SCL_4_PxOUT;
-    light_sensors[13].scl_port_in = OPT4003_I2C_SCL_4_PxIN;
-    light_sensors[13].scl_port_dir = OPT4003_I2C_SCL_4_PxDIR;
+    light_sensors[13].scl_port_out = &OPT4003_I2C_SCL_4_PxOUT;
+    light_sensors[13].scl_port_in = &OPT4003_I2C_SCL_4_PxIN;
+    light_sensors[13].scl_port_dir = &OPT4003_I2C_SCL_4_PxDIR;
     light_sensors[13].scl_pin = OPT4003_I2C_SCL_4_PIN;
     OPT4003_Init(&light_sensors[13]);
 }

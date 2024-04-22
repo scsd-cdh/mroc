@@ -20,9 +20,9 @@ typedef struct {
 
     // Temperature
     uint16_t well_temperature;
-    uint16_t ambient_temperature;
-    uint16_t ambient_pressure;
-    uint16_t ambient_humidity;
+    int32_t ambient_temperature;
+    uint32_t ambient_pressure;
+    uint32_t ambient_humidity;
 
     // Pumps
     bool bipump_on;

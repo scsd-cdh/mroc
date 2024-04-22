@@ -25,6 +25,6 @@ void main(void) {
 
     while(1) {
         Exp_Update();
-        __bis_SR_register(LPM3_bits | GIE);
+        __bis_SR_register(LPM1_bits | GIE);
     }
 }

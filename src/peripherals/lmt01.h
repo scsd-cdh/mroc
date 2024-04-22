@@ -16,6 +16,6 @@ typedef struct {
 }LMT01_Descriptor;
 
 void LMT01_Init(LMT01_Descriptor *descriptor);
-float LMT01_Read(LMT01_Descriptor *descriptor);
+float LMT01_Read();
 
 #endif /* SRC_PERIPHERALS_LMT01_H_ */

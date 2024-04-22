@@ -56,7 +56,7 @@ void RTC_C_ISR (void)
         case RTCIV_RTCOFIFG: break;
         case RTCIV_RTCRDYIFG:
             app.uptime_seconds ++;
-            __bic_SR_register_on_exit(LPM3_bits);
+            __bic_SR_register_on_exit(LPM1_bits);
             break;
         case RTCIV_RTCTEVIFG: break;
         case RTCIV_RTCAIFG: break;

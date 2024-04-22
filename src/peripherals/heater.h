@@ -16,7 +16,7 @@ typedef struct {
 } Heater_Descriptor;
 
 void Heater_Init(Heater_Descriptor *descriptor);
-void Heater_Write(Heater_Descriptor *descriptor, uint8_t value);
-void Heater_Off(Heater_Descriptor *descriptor);
+void Heater_Write(uint8_t value);
+void Heater_Off();
 
 #endif /* SRC_PERIPHERALS_HEATER_H_ */

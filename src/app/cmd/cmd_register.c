@@ -73,18 +73,21 @@ void Cmd_SetExperimentStatusRegister(uint8_t last_state, uint8_t result, uint32_
     experimentStatusRegister.uptime_seconds = uptime;
 }
 
-void Cmd_SetHardwareHealthStatusRegister() {
-    hardwareHealthStatusRegister.other_devices = 255;
+void Cmd_SetHardwareHealthStatusRegister(uint16_t pump, uint16_t heater, uint16_t voltage_reference) {
+    hardwareHealthStatusRegister.pump_current_sensing = pump;
+    hardwareHealthStatusRegister.heater_current_sensing = heater;
+    hardwareHealthStatusRegister.voltage_reference_current_sensing = voltage_reference;
 }
 
-void Cmd_SetEnvironmentInformationRegister(uint16_t well_temperature, uint16_t ambient_temperature, uint16_t ambient_pressure, uint16_t ambient_humidity){
+void Cmd_SetEnvironmentInformationRegister(uint16_t well_temperature, int32_t ambient_temperature, uint32_t ambient_pressure, uint32_t ambient_humidity){
     environmentInformationRegister.well_temperature = well_temperature;
     environmentInformationRegister.ambient_temperature = ambient_temperature;
     environmentInformationRegister.ambient_pressure = ambient_pressure;
     environmentInformationRegister.ambient_humidity = ambient_humidity;
 }
 
-void Cmd_SetPhotosensorResults(uint32_t results[WELL_COUNT]) {
+void Cmd_SetPhotosensorResults(uint8_t wavelength, uint32_t results[WELL_COUNT]) {
+    photoSensorResultsRegister.wavelength = wavelength;
     int i;
     for(i = 0; i < WELL_COUNT; i ++) {
         photoSensorResultsRegister.results[i] = results[i];

@@ -133,6 +133,8 @@ void Exp_SetState(uint8_t newState)
 }
 
 void Exp_SetIdle() {
+    Exp_ExitState();
+
     if (currentState != STATE_IDLE) {
         experimentMonitor.uptime_seconds = App_GetUptime() - experimentMonitor.uptime_seconds;
     }
@@ -142,10 +144,8 @@ void Exp_SetIdle() {
 
 void Exp_Update()
 {
-    HK_Update();
-    HK_Read(&hkDescriptor);
-
-    experimentMonitor.well_temperature = LMT01_Read(&wellTemperatureDescriptor);
+    // Read temperature and environment information
+    experimentMonitor.well_temperature = LMT01_Read();
     BME280_Read(&experimentMonitor);
 
     // Do experiment actions
@@ -166,6 +166,10 @@ void Exp_Update()
         break;
     }
 
+    // Update current sensing after actions are taken
+    HK_Update();
+    HK_Read(&hkDescriptor);
+
     // Update Registers
     Cmd_SetSystemStatus(currentState, App_GetUptime());
     Cmd_SetExperimentStatusRegister(
@@ -178,7 +182,11 @@ void Exp_Update()
             experimentMonitor.ambient_pressure,
             experimentMonitor.ambient_humidity
     );
-    Cmd_SetPhotosensorResults(experimentResults);
+    Cmd_SetHardwareHealthStatusRegister(
+            hkDescriptor.pump_current_sensing,
+            hkDescriptor.heater_current_sensing,
+            hkDescriptor.voltage_reference_current_sensing);
+    Cmd_SetPhotosensorResults(currentWavelength, experimentResults);
 }
 
 bool State_IsIdle() {
@@ -187,17 +195,10 @@ bool State_IsIdle() {
 
 void State_HandlePreparation()
 {
-    if(!experimentMonitor.bipump_on) {
+    if (!experimentMonitor.bipump_on) {
         Bipump_Forward(&bipumpDescriptor);
         experimentMonitor.bipump_timer = App_GetUptime(); // Start timer
-        experimentMonitor.bipump_on = true;
     }
-//    if (experimentMonitor.well_temperature > MIN_EXP_TEMP &&
-//        experimentMonitor.ambient_temperature > MIN_EXP_TEMP &&
-//        !experimentMonitor.bipump_on) {
-//        Bipump_Forward(&bipumpDescriptor);
-//        experimentMonitor.bipump_timer = App_GetUptime(); // Start timer
-//    }
 
     if(experimentMonitor.bipump_on &&
         App_GetUptime() - experimentMonitor.bipump_timer >= MIX_PUMP_DURATION) {
@@ -224,7 +225,7 @@ void State_HandleActivation()
     }
 
     if (experimentMonitor.valve_on &&
-        App_GetUptime() - experimentMonitor.pump_timer >= MIX_PUMP_DURATION) {
+        App_GetUptime() - experimentMonitor.pump_timer >= 120) {
         Pump_Off(&pumpDescriptor);
         __delay_cycles(10000);
         Valve_Close(&valveDescriptor);

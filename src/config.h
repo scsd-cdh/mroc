@@ -72,10 +72,10 @@
 #define HEATER_PIN              GPIO_PIN0
 
 // MPQ3326 Pinout
-#define MPQ3326_W570_ADDR       0x36
-#define MPQ3326_W630_ADDR       0x37
-#define MPQ3326_W470_ADDR       0x38
-#define MPQ3326_W850_ADDR       0x39
+#define MPQ3326_W570_ADDR       0x32
+#define MPQ3326_W630_ADDR       0x36
+#define MPQ3326_W470_ADDR       0x33
+#define MPQ3326_W850_ADDR       0x34
 #define MPQ3326_I2C_SDA_PxOUT   P3OUT
 #define MPQ3326_I2C_SDA_PxIN    P3IN
 #define MPQ3326_I2C_SDA_PxDIR   P3DIR
@@ -84,6 +84,8 @@
 #define MPQ3326_I2C_SCL_PxIN    P5IN
 #define MPQ3326_I2C_SCL_PxDIR   P5DIR
 #define MPQ3326_I2C_SCL_PIN     GPIO_PIN3
+#define MPQ3326_ENABLE_PORT     GPIO_PORT_P5
+#define MPQ3326_ENABLE_PIN      GPIO_PIN1
 
 // OPT4003 Pinout
 #define OPT4003_I2C_ADDR_1      0x44
